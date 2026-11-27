@@ -18,10 +18,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const staff = await getCurrentStaff();
-  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   const body = (await req.json()) as {
     member_id?: string;
+    portal_token?: string;
     weight_kg?: number;
     height_cm?: number;
     body_fat_percent?: number | null;
@@ -29,11 +28,28 @@ export async function POST(req: Request) {
     waist_cm?: number | null;
     notes?: string | null;
   };
-  if (!body.member_id || !body.weight_kg || !body.height_cm) {
-    return NextResponse.json({ error: "Member, berat & tinggi wajib diisi" }, { status: 400 });
-  }
 
   const db = readLocalDb();
+  let authorized = Boolean(staff);
+
+  if (!authorized && body.portal_token && body.member_id) {
+    const memberMatch = db.members.find(
+      (m) => m.id === body.member_id && m.portal_token === body.portal_token,
+    );
+    authorized = Boolean(memberMatch);
+  }
+
+  if (!authorized) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!body.member_id || !body.weight_kg || !body.height_cm) {
+    return NextResponse.json(
+      { error: "Member, berat & tinggi wajib diisi" },
+      { status: 400 },
+    );
+  }
+
   const metric = {
     id: `bm-${Date.now()}`,
     member_id: body.member_id,

@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { Dumbbell } from "lucide-react";
 import { readLocalDb } from "@/lib/db/local-store";
-import { getGymSettings, getMemberByPortalToken, listPackages } from "@/lib/db/service";
+import { getGymSettings, getMemberByPortalToken } from "@/lib/db/service";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { QrCodeBox } from "@/components/ui/QrCodeBox";
-import { PortalRenewalClient } from "@/components/portal/PortalRenewalClient";
+import { MemberPortalProgressClient } from "@/components/portal/MemberPortalProgressClient";
 import {
   TRANSACTION_TYPE_LABELS,
   formatDateId,
@@ -22,10 +22,10 @@ export default async function MemberPortalPage({
   if (!member) notFound();
 
   const settings = getGymSettings();
-  const membershipPackages = listPackages(true).filter(
-    (p) => p.type === "membership"
-  );
   const db = readLocalDb();
+  const memberMetrics = (db.body_metrics || [])
+    .filter((bm) => bm.member_id === member.id)
+    .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
   const transactions = db.transactions
     .filter((t) => t.member_id === member.id && t.status === "paid")
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -100,7 +100,12 @@ export default async function MemberPortalPage({
           </div>
         </div>
 
-        <PortalRenewalClient token={token} packages={membershipPackages} />
+        <MemberPortalProgressClient
+          memberId={member.id}
+          memberName={member.full_name}
+          portalToken={token}
+          initialMetrics={memberMetrics}
+        />
 
         <div className="rounded-3xl bg-white p-5 shadow-lg">
           <h2 className="text-sm font-bold text-slate-900">
