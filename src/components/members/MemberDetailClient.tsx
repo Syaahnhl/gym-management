@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ExternalLink, MessageCircle } from "lucide-react";
+import { ExternalLink, MessageCircle, Printer } from "lucide-react";
 import type {
   Checkin,
   Membership,
@@ -144,8 +144,11 @@ export function MemberDetailClient({
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="flex flex-col items-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+            Kartu Presensi Member
+          </p>
           <QrCodeBox value={member.member_code} size={180} />
-          <p className="mt-3 font-mono text-sm font-bold text-slate-900">
+          <p className="mt-3 rounded-lg bg-slate-100 px-3 py-1 font-mono text-base font-extrabold text-slate-900">
             {member.member_code}
           </p>
           <p className="mt-1 text-xs text-slate-500">
@@ -154,13 +157,22 @@ export function MemberDetailClient({
               {formatDateId(member.status_info.end_date)}
             </strong>
           </p>
-          <Link
-            href={portalPath}
-            target="_blank"
-            className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:underline"
-          >
-            Buka Portal Member <ExternalLink className="h-3.5 w-3.5" />
-          </Link>
+          <div className="no-print mt-3 flex items-center gap-3">
+            <Link
+              href={portalPath}
+              target="_blank"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:underline"
+            >
+              Portal Member <ExternalLink className="h-3.5 w-3.5" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1 rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            >
+              <Printer className="h-3.5 w-3.5" /> Cetak Kartu
+            </button>
+          </div>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">

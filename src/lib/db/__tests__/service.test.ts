@@ -9,6 +9,7 @@ import {
   createExpense,
   createPromotion,
   finishFreezeEarly,
+  getMemberByCodeOrPhone,
   getMemberById,
   getProfitLossReport,
   getShiftSummary,
@@ -340,5 +341,19 @@ describe("Integrasi Service Layer & Kriteria Penerimaan (Section 13)", () => {
       recordMemberCheckin(kasir, "invalid-id", "qr")
     ).toThrow();
     expect(kasir.role).toBe("cashier");
+  });
+
+  it("Presensi member mendukung QR (GYM-00001) dan ID manual singkat (1 / 00001)", () => {
+    const kasir = authenticateStaff("kasir1@ironpeak.id", "gym123456")!;
+    const mByCode = getMemberByCodeOrPhone("GYM-00001")!;
+    const mByShort = getMemberByCodeOrPhone("1")!;
+    expect(mByCode.id).toBe(mByShort.id);
+
+    const ciQr = recordMemberCheckin(kasir, mByCode.id, "qr");
+    expect(ciQr.allowed).toBe(true);
+
+    const ciManual = recordMemberCheckin(kasir, mByShort.id, "search");
+    expect(ciManual.allowed).toBe(true);
+    expect(ciManual.is_duplicate).toBe(true);
   });
 });

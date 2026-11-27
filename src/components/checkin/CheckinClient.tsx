@@ -40,6 +40,7 @@ export function CheckinClient({
   initialCheckins: TodayCheckinRow[];
 }) {
   const [scanInput, setScanInput] = useState("");
+  const [manualIdInput, setManualIdInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [cameraOn, setCameraOn] = useState(false);
   const [result, setResult] = useState<CheckinResult | null>(null);
@@ -92,6 +93,7 @@ export function CheckinClient({
       ]);
     }
     setScanInput("");
+    setManualIdInput("");
     setSearchQuery("");
     scanRef.current?.focus();
   }
@@ -131,17 +133,28 @@ export function CheckinClient({
     ? "border-amber-300 bg-amber-50 text-amber-900"
     : "border-emerald-300 bg-emerald-50 text-emerald-900";
 
+  const uniqueTodayCount = new Set(
+    checkins.filter((c) => !c.is_duplicate).map((c) => c.code)
+  ).size;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Check-in Member</h1>
-        <p className="text-sm text-slate-500">
-          Scan QR dengan scanner USB, kamera perangkat, atau cari nama/nomor HP
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            Presensi Member (QR & ID Manual)
+          </h1>
+          <p className="text-sm text-slate-500">
+            Scan QR Code member atau masukkan ID Member manual jika QR bermasalah
+          </p>
+        </div>
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-900">
+          Hadir Hari Ini: <strong>{uniqueTodayCount} member</strong> ({checkins.length} total scan)
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Panel Scan & Cari */}
+        {/* Panel Scan & Presensi Manual ID */}
         <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <form
             onSubmit={(e) => {
@@ -153,7 +166,7 @@ export function CheckinClient({
             className="space-y-2"
           >
             <label className="block text-sm font-semibold text-slate-800">
-              Scan QR / Scanner USB (Ketik kode & Enter)
+              1. Scan QR Code (Scanner USB)
             </label>
             <div className="flex gap-2">
               <input
@@ -161,14 +174,42 @@ export function CheckinClient({
                 autoFocus
                 value={scanInput}
                 onChange={(e) => setScanInput(e.target.value)}
-                placeholder="GYM-00001 atau 0812..."
+                placeholder="Arahkan scanner QR (cth: GYM-00001)"
                 className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-emerald-500 focus:outline-none"
               />
               <button
                 type="submit"
                 className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
               >
-                Check-in
+                Scan QR
+              </button>
+            </div>
+          </form>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (manualIdInput.trim()) {
+                submitCheckin({ query: manualIdInput.trim(), method: "search" });
+              }
+            }}
+            className="space-y-2 border-t border-slate-100 pt-4"
+          >
+            <label className="block text-sm font-semibold text-slate-800">
+              2. Presensi Manual pakai ID Member (Jika QR Tidak Bisa)
+            </label>
+            <div className="flex gap-2">
+              <input
+                value={manualIdInput}
+                onChange={(e) => setManualIdInput(e.target.value)}
+                placeholder="Ketik ID: GYM-00001 atau cukup angka 1"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-sky-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+              >
+                Presensi ID
               </button>
             </div>
           </form>

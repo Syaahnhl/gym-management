@@ -43,7 +43,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/checkin", label: "Check-in", icon: QrCode },
+  { href: "/checkin", label: "Presensi (QR / ID)", icon: QrCode },
   { href: "/members", label: "Data Member", icon: Users },
   { href: "/members/new", label: "Member Baru", icon: UserPlus },
   { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket },

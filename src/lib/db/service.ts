@@ -269,8 +269,15 @@ export function getMemberById(id: string): MemberWithStatus | null {
 
 export function getMemberByCodeOrPhone(query: string): MemberWithStatus | null {
   const q = query.trim().toLowerCase();
+  if (!q) return null;
+  const shorthandCode = /^\d{1,5}$/.test(q)
+    ? `gym-${q.padStart(5, "0")}`
+    : null;
   const member = readLocalDb().members.find(
-    (m) => m.member_code.toLowerCase() === q || m.phone.toLowerCase() === q
+    (m) =>
+      m.member_code.toLowerCase() === q ||
+      (shorthandCode !== null && m.member_code.toLowerCase() === shorthandCode) ||
+      m.phone.toLowerCase() === q
   );
   return member ? enrichMemberWithStatus(member) : null;
 }

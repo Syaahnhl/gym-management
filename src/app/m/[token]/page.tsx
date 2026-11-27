@@ -61,8 +61,18 @@ export default async function MemberPortalPage({
             <QrCodeBox value={member.member_code} size={220} />
           </div>
 
+          <div className="mb-3 w-full rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5">
+            <p className="text-[11px] font-medium text-emerald-800">
+              ID Presensi Manual
+            </p>
+            <p className="font-mono text-lg font-extrabold tracking-wider text-emerald-900">
+              {member.member_code}
+            </p>
+          </div>
+
           <p className="text-xs text-slate-500">
-            Tunjukkan QR Code ini ke kasir saat check-in
+            Tunjukkan QR Code ini ke scanner, atau sebutkan ID Member di atas ke
+            kasir untuk presensi manual
           </p>
 
           <div className="mt-5 grid w-full grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
