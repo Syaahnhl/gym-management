@@ -20,6 +20,7 @@ import { getCurrentStaff } from "@/lib/auth/session";
 import { buildWhatsAppUrl } from "@/lib/domain/format";
 import { PricingAndFaqSection } from "@/components/landing/PricingSection";
 import { QrWorkflowShowcase } from "@/components/checkin/QrWorkflowShowcase";
+import { LandingNavbar } from "@/components/landing/LandingNavbar";
 
 export const dynamic = "force-dynamic";
 
@@ -77,51 +78,20 @@ export default async function GymMateLandingPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navbar */}
-      <header className="sticky top-0 z-40 border-b border-blue-100 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-600/20">
-              <Dumbbell className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-base font-extrabold leading-tight tracking-tight text-slate-900">
-                GymMate
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Platform Manajemen Gym Modern
-              </p>
-            </div>
-          </div>
-
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a href="#perbandingan" className="hover:text-blue-600">
-              Solusi
-            </a>
-            <a href="#fitur" className="hover:text-blue-600">
-              Fitur
-            </a>
-            <a href="#harga" className="hover:text-blue-600">
-              Harga
-            </a>
-            <a href="#faq" className="hover:text-blue-600">
-              FAQ
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href={staff ? "/dashboard" : "/login"}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700"
-            >
-              {staff ? "Buka Dashboard" : "Coba Demo Live"}{" "}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </header>
+      <LandingNavbar
+        subtitle="Platform Manajemen Gym Modern"
+        loginHref={staff ? "/dashboard" : "/login"}
+        loginLabel={staff ? "Buka Dashboard" : "Coba Demo Live"}
+        navLinks={[
+          { href: "#perbandingan", label: "Masalah & Solusi" },
+          { href: "#fitur", label: "Fitur" },
+          { href: "#harga", label: "Paket Sistem" },
+          { href: "#faq", label: "FAQ" },
+        ]}
+      />
 
       {/* Animated 3-Step QR Workflow Showcase */}
-      <section className="mx-auto max-w-5xl px-4 py-10">
+      <section id="cara-kerja" className="mx-auto max-w-5xl px-4 py-10">
         <div className="mb-5 text-center">
           <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
             Lihat Cara Kerjanya: Scan QR, Isi Progres BB/BMI, Selesai!
