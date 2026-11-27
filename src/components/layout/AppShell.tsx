@@ -328,13 +328,14 @@ export function AppShell({
             className="fixed inset-0 bg-slate-900/60"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="relative z-10 w-64 max-w-[80vw]">
+          <div className="relative z-10 h-full w-72 max-w-[85vw] shadow-2xl">
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="absolute right-3 top-3 rounded-lg p-1 text-slate-400 hover:text-white"
+              aria-label="Tutup menu"
+              className="absolute right-3 top-3.5 z-10 rounded-lg border border-slate-200 bg-white p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </button>
             {sidebarContent}
           </div>
@@ -343,23 +344,24 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top Quick-Action Header */}
-        <header className="no-print sticky top-0 z-30 flex items-center justify-between border-b border-blue-100 bg-white/95 px-4 py-3 backdrop-blur md:px-6">
-          <div className="flex items-center gap-3">
+        <header className="no-print sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-blue-100 bg-white/95 px-3 py-2.5 backdrop-blur sm:px-4 md:px-6">
+          <div className="flex min-w-0 items-center gap-2.5">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="rounded-lg border border-blue-200 p-2 text-blue-700 lg:hidden"
+              aria-label="Buka menu"
+              className="shrink-0 rounded-lg border border-blue-200 p-2 text-blue-700 lg:hidden"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="text-sm font-bold text-slate-900 lg:hidden">
+            <span className="truncate text-sm font-bold text-slate-900 lg:hidden">
               {settings.name}
             </span>
-            <span className="hidden text-xs font-semibold text-slate-600 lg:inline">
+            <span className="hidden truncate text-xs font-semibold text-slate-600 lg:inline">
               {settings.name}
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {staff.role === "cashier" && (
               <>
                 <Link
@@ -379,7 +381,48 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-3 pb-24 sm:p-4 md:p-6 lg:p-8 lg:pb-8">{children}</main>
+
+        {/* Mobile Bottom Navigation */}
+        <nav className="no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-blue-100 bg-white/95 backdrop-blur lg:hidden">
+          {(staff.role === "owner"
+            ? [
+                { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+                { href: "/members", label: "Member", icon: Users },
+                { href: "/transactions", label: "Transaksi", icon: CreditCard },
+                { href: "/reports/profit-loss", label: "Laba Rugi", icon: BarChart3 },
+              ]
+            : [
+                { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+                { href: "/checkin", label: "Presensi", icon: QrCode },
+                { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
+                { href: "/members", label: "Member", icon: Users },
+              ]
+          ).map((item) => {
+            const Icon = item.icon;
+            const active = isRouteActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-semibold ${
+                  active ? "text-blue-600" : "text-slate-500"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="truncate">{item.label}</span>
+              </Link>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            className="flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-semibold text-slate-500"
+          >
+            <Menu className="h-4 w-4" />
+            <span>Menu</span>
+          </button>
+        </nav>
       </div>
 
       {/* Modal Ganti Password (FR-05) */}
