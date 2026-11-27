@@ -4,21 +4,29 @@ import { toZonedTime } from "date-fns-tz";
 import { GYM_TIMEZONE, addDaysToDateStr } from "@/lib/domain/membership";
 import type {
   ActivityLog,
+  Branch,
   Checkin,
+  ClassBooking,
+  ClassSchedule,
   Expense,
   Freeze,
   GymSettings,
   Member,
   Membership,
   Package,
+  PaymentIntent,
   Product,
   Promotion,
+  PtPackage,
+  PtSession,
   Referral,
   Shift,
   StaffUser,
   StockMovement,
+  Trainer,
   Transaction,
   TransactionItem,
+  WhatsappLog,
 } from "@/types/database";
 
 export interface LocalDbSchema {
@@ -35,6 +43,14 @@ export interface LocalDbSchema {
   expenses: Expense[];
   promotions: Promotion[];
   referrals: Referral[];
+  trainers: Trainer[];
+  pt_packages: PtPackage[];
+  pt_sessions: PtSession[];
+  class_schedules: ClassSchedule[];
+  class_bookings: ClassBooking[];
+  payment_intents: PaymentIntent[];
+  whatsapp_logs: WhatsappLog[];
+  branches: Branch[];
   checkins: Checkin[];
   shifts: Shift[];
   activity_logs: ActivityLog[];
@@ -480,6 +496,13 @@ export function createInitialSeedData(): LocalDbSchema {
       referral_discount_amount: 50000,
       referral_reward_type: "days",
       referral_reward_value: 7,
+      payment_gateway_provider: "midtrans",
+      payment_gateway_server_key: null,
+      auto_wa_enabled: false,
+      wa_api_provider: "fonnte",
+      wa_api_token: null,
+      turnstile_enabled: false,
+      turnstile_webhook_url: null,
       updated_at: now.toISOString(),
     },
     users,
@@ -494,6 +517,111 @@ export function createInitialSeedData(): LocalDbSchema {
     expenses,
     promotions,
     referrals: [],
+    trainers: [
+      {
+        id: "tr-1",
+        name: "Coach Reza Pratama",
+        phone: "081211112222",
+        specialty: "Strength & Hypertrophy",
+        commission_type: "percent",
+        commission_value: 40,
+        is_active: true,
+        created_at: subDays(now, 30).toISOString(),
+      },
+      {
+        id: "tr-2",
+        name: "Coach Nadia Putri",
+        phone: "081233334444",
+        specialty: "Zumba, HIIT & Mobility",
+        commission_type: "fixed",
+        commission_value: 100000,
+        is_active: true,
+        created_at: subDays(now, 30).toISOString(),
+      },
+    ],
+    pt_packages: [
+      {
+        id: "ptp-1",
+        name: "Paket PT 5 Sesi",
+        sessions_count: 5,
+        price: 1250000,
+        validity_days: 45,
+        is_active: true,
+        created_at: subDays(now, 30).toISOString(),
+      },
+      {
+        id: "ptp-2",
+        name: "Paket PT 10 Sesi",
+        sessions_count: 10,
+        price: 2200000,
+        validity_days: 90,
+        is_active: true,
+        created_at: subDays(now, 30).toISOString(),
+      },
+    ],
+    pt_sessions: [
+      {
+        id: "pts-1",
+        member_id: "44444444-4444-4444-4444-000000000001",
+        trainer_id: "tr-1",
+        pt_package_id: "ptp-1",
+        session_date: todayStr,
+        session_time: "10:00",
+        session_fee: 250000,
+        commission_amount: 100000,
+        status: "completed",
+        notes: "Upper body strength",
+        created_by: kasir1Id,
+        created_at: now.toISOString(),
+      },
+    ],
+    class_schedules: [
+      {
+        id: "cls-1",
+        title: "Morning HIIT Burn",
+        trainer_id: "tr-2",
+        class_date: todayStr,
+        start_time: "07:00",
+        end_time: "08:00",
+        max_capacity: 15,
+        fee_per_session: 0,
+        is_active: true,
+        created_at: now.toISOString(),
+      },
+      {
+        id: "cls-2",
+        title: "Evening Zumba Party",
+        trainer_id: "tr-2",
+        class_date: addDaysToDateStr(todayStr, 1),
+        start_time: "18:30",
+        end_time: "19:30",
+        max_capacity: 20,
+        fee_per_session: 0,
+        is_active: true,
+        created_at: now.toISOString(),
+      },
+    ],
+    class_bookings: [],
+    payment_intents: [],
+    whatsapp_logs: [],
+    branches: [
+      {
+        id: "branch-1",
+        name: "Cabang Pusat Sudirman",
+        address: "Jl. Jend. Sudirman Kav. 45, Jakarta Selatan",
+        phone: "081299998888",
+        is_active: true,
+        created_at: subDays(now, 60).toISOString(),
+      },
+      {
+        id: "branch-2",
+        name: "Cabang Kemang",
+        address: "Jl. Kemang Raya No. 18, Jakarta Selatan",
+        phone: "081277776666",
+        is_active: true,
+        created_at: subDays(now, 20).toISOString(),
+      },
+    ],
     checkins,
     shifts,
     activity_logs: [

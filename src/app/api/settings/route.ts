@@ -21,6 +21,13 @@ const updateSchema = z.object({
   referral_discount_amount: z.number().int().min(0).optional(),
   referral_reward_type: z.enum(["days", "discount_balance"]).optional(),
   referral_reward_value: z.number().int().min(0).optional(),
+  payment_gateway_provider: z.enum(["none", "midtrans", "xendit"]).optional(),
+  payment_gateway_server_key: z.string().nullable().optional(),
+  auto_wa_enabled: z.boolean().optional(),
+  wa_api_provider: z.enum(["none", "fonnte", "wablas", "cloud_api"]).optional(),
+  wa_api_token: z.string().nullable().optional(),
+  turnstile_enabled: z.boolean().optional(),
+  turnstile_webhook_url: z.string().nullable().optional(),
 });
 
 export async function GET() {

@@ -136,6 +136,98 @@ export interface Referral {
   created_at: string;
 }
 
+export interface Trainer {
+  id: string;
+  name: string;
+  phone: string;
+  specialty: string;
+  commission_type: "percent" | "fixed";
+  commission_value: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface PtPackage {
+  id: string;
+  name: string;
+  sessions_count: number;
+  price: number;
+  validity_days: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface PtSession {
+  id: string;
+  member_id: string;
+  trainer_id: string;
+  pt_package_id: string | null;
+  session_date: string;
+  session_time: string;
+  session_fee: number;
+  commission_amount: number;
+  status: "scheduled" | "completed" | "cancelled";
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface ClassSchedule {
+  id: string;
+  title: string;
+  trainer_id: string | null;
+  class_date: string;
+  start_time: string;
+  end_time: string;
+  max_capacity: number;
+  fee_per_session: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface ClassBooking {
+  id: string;
+  class_schedule_id: string;
+  member_id: string;
+  status: "booked" | "attended" | "cancelled";
+  created_at: string;
+}
+
+export interface PaymentIntent {
+  id: string;
+  order_id: string;
+  member_id: string;
+  package_id: string;
+  amount: number;
+  provider: "midtrans" | "xendit" | "none";
+  payment_url: string | null;
+  qr_string: string | null;
+  status: "pending" | "paid" | "expired" | "failed";
+  paid_at: string | null;
+  transaction_id: string | null;
+  created_at: string;
+}
+
+export interface WhatsappLog {
+  id: string;
+  member_id: string | null;
+  phone: string;
+  message: string;
+  type: "reminder" | "receipt" | "portal";
+  status: "sent" | "failed";
+  provider: string;
+  created_at: string;
+}
+
+export interface Branch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface GymSettings {
   id: string;
   name: string;
@@ -155,6 +247,13 @@ export interface GymSettings {
   referral_discount_amount: number;
   referral_reward_type: ReferralRewardType;
   referral_reward_value: number;
+  payment_gateway_provider?: "none" | "midtrans" | "xendit";
+  payment_gateway_server_key?: string | null;
+  auto_wa_enabled?: boolean;
+  wa_api_provider?: "none" | "fonnte" | "wablas" | "cloud_api";
+  wa_api_token?: string | null;
+  turnstile_enabled?: boolean;
+  turnstile_webhook_url?: string | null;
   updated_at: string;
 }
 
@@ -206,6 +305,7 @@ export interface Member {
   portal_token: string;
   referral_code?: string;
   discount_balance?: number;
+  branch_id?: string | null;
   is_active: boolean;
   last_reminded_at: string | null;
   last_reminded_by: string | null;

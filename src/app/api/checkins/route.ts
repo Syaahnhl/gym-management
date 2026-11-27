@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireApiStaff } from "@/lib/auth/session";
 import { readLocalDb } from "@/lib/db/local-store";
 import { getMemberByCodeOrPhone, getMemberById, recordMemberCheckin } from "@/lib/db/service";
+import { triggerTurnstileGate } from "@/lib/db/phase2b-service";
 import { getJakartaTodayStr } from "@/lib/domain/membership";
 
 const checkinSchema = z.object({
@@ -62,7 +63,10 @@ export async function POST(req: NextRequest) {
     }
 
     const result = recordMemberCheckin(auth.staff, member.id, parsed.data.method);
-    return NextResponse.json(result);
+    const turnstile = result.allowed
+      ? await triggerTurnstileGate(member.member_code)
+      : null;
+    return NextResponse.json({ ...result, turnstile });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Gagal memproses check-in" },

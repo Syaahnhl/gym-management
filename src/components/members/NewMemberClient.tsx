@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { Member, Package, PaymentMethod, StaffRole } from "@/types/database";
 import { formatRupiah } from "@/lib/domain/format";
 import { addDaysToDateStr } from "@/lib/domain/membership";
+import { PhotoUploadField } from "@/components/ui/PhotoUploadField";
 
 export function NewMemberClient({
   packages,
@@ -27,6 +28,7 @@ export function NewMemberClient({
   const [address, setAddress] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [emergencyContact, setEmergencyContact] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
 
   const [packageId, setPackageId] = useState(packages[0]?.id || "");
@@ -70,6 +72,7 @@ export function NewMemberClient({
             birth_date: birthDate || null,
             address: address || null,
             id_number: idNumber || null,
+            photo_url: photoUrl,
             emergency_contact: emergencyContact || null,
             notes: notes || null,
           },
@@ -201,6 +204,14 @@ export function NewMemberClient({
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <PhotoUploadField
+                label="Foto Member (Opsional)"
+                folder="members"
+                value={photoUrl}
+                onChange={setPhotoUrl}
               />
             </div>
             <div className="sm:col-span-2">

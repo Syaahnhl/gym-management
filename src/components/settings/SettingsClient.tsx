@@ -48,6 +48,22 @@ export function SettingsClient({
   const [referralRewardValue, setReferralRewardValue] = useState(
     initialSettings.referral_reward_value
   );
+  const [pgProvider, setPgProvider] = useState(
+    initialSettings.payment_gateway_provider || "midtrans"
+  );
+  const [autoWa, setAutoWa] = useState(
+    initialSettings.auto_wa_enabled || false
+  );
+  const [waProvider, setWaProvider] = useState(
+    initialSettings.wa_api_provider || "fonnte"
+  );
+  const [waToken, setWaToken] = useState(initialSettings.wa_api_token || "");
+  const [turnstileEnabled, setTurnstileEnabled] = useState(
+    initialSettings.turnstile_enabled || false
+  );
+  const [turnstileUrl, setTurnstileUrl] = useState(
+    initialSettings.turnstile_webhook_url || ""
+  );
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,6 +91,12 @@ export function SettingsClient({
         referral_discount_amount: Number(referralDiscount),
         referral_reward_type: referralRewardType,
         referral_reward_value: Number(referralRewardValue),
+        payment_gateway_provider: pgProvider,
+        auto_wa_enabled: autoWa,
+        wa_api_provider: waProvider,
+        wa_api_token: waToken || null,
+        turnstile_enabled: turnstileEnabled,
+        turnstile_webhook_url: turnstileUrl || null,
       }),
     });
     const data = await res.json();
@@ -303,6 +325,77 @@ export function SettingsClient({
               />
             </div>
           </div>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4 space-y-3">
+          <h2 className="text-sm font-bold text-slate-900">
+            Integrasi Payment Gateway, WhatsApp API & Turnstile
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Payment Gateway
+              </label>
+              <select
+                value={pgProvider}
+                onChange={(e) =>
+                  setPgProvider(e.target.value as "none" | "midtrans" | "xendit")
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="midtrans">Midtrans (QRIS / VA)</option>
+                <option value="xendit">Xendit</option>
+                <option value="none">Nonaktif</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Provider WhatsApp API
+              </label>
+              <select
+                value={waProvider}
+                onChange={(e) =>
+                  setWaProvider(
+                    e.target.value as "none" | "fonnte" | "wablas" | "cloud_api"
+                  )
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="fonnte">Fonnte</option>
+                <option value="wablas">Wablas</option>
+                <option value="cloud_api">WhatsApp Cloud API</option>
+                <option value="none">Nonaktif</option>
+              </select>
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={autoWa}
+              onChange={(e) => setAutoWa(e.target.checked)}
+            />
+            Aktifkan pengiriman WhatsApp API otomatis
+          </label>
+          <input
+            placeholder="Token WhatsApp API (Opsional)"
+            value={waToken}
+            onChange={(e) => setWaToken(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={turnstileEnabled}
+              onChange={(e) => setTurnstileEnabled(e.target.checked)}
+            />
+            Aktifkan integrasi Turnstile / Pintu Otomatis saat Check-in
+          </label>
+          <input
+            placeholder="Webhook URL Controller Turnstile (http://192.168.1.50/open)"
+            value={turnstileUrl}
+            onChange={(e) => setTurnstileUrl(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
         </div>
 
         {error && <p className="text-sm text-rose-600">{error}</p>}

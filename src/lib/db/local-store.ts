@@ -33,6 +33,31 @@ export function readLocalDb(): LocalDbSchema {
   if (!parsed.expenses) parsed.expenses = [];
   if (!parsed.promotions) parsed.promotions = [];
   if (!parsed.referrals) parsed.referrals = [];
+  if (!parsed.trainers) parsed.trainers = [];
+  if (!parsed.pt_packages) parsed.pt_packages = [];
+  if (!parsed.pt_sessions) parsed.pt_sessions = [];
+  if (!parsed.class_schedules) parsed.class_schedules = [];
+  if (!parsed.class_bookings) parsed.class_bookings = [];
+  if (!parsed.payment_intents) parsed.payment_intents = [];
+  if (!parsed.whatsapp_logs) parsed.whatsapp_logs = [];
+  if (!parsed.branches) {
+    parsed.branches = [
+      {
+        id: "branch-1",
+        name: "Cabang Pusat Sudirman",
+        address: parsed.gym_settings.address || "Jakarta Selatan",
+        phone: parsed.gym_settings.whatsapp_number || "081299998888",
+        is_active: true,
+        created_at: new Date().toISOString(),
+      },
+    ];
+  }
+  if (parsed.gym_settings.payment_gateway_provider === undefined) {
+    parsed.gym_settings.payment_gateway_provider = "midtrans";
+    parsed.gym_settings.auto_wa_enabled = false;
+    parsed.gym_settings.wa_api_provider = "fonnte";
+    parsed.gym_settings.turnstile_enabled = false;
+  }
   if (parsed.gym_settings.referral_enabled === undefined) {
     parsed.gym_settings.referral_enabled = true;
     parsed.gym_settings.referral_discount_amount = 50000;
