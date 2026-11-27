@@ -381,48 +381,7 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="flex-1 p-3 pb-24 sm:p-4 md:p-6 lg:p-8 lg:pb-8">{children}</main>
-
-        {/* Mobile Bottom Navigation */}
-        <nav className="no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-blue-100 bg-white/95 backdrop-blur lg:hidden">
-          {(staff.role === "owner"
-            ? [
-                { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-                { href: "/members", label: "Member", icon: Users },
-                { href: "/transactions", label: "Transaksi", icon: CreditCard },
-                { href: "/reports/profit-loss", label: "Laba Rugi", icon: BarChart3 },
-              ]
-            : [
-                { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-                { href: "/checkin", label: "Presensi", icon: QrCode },
-                { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
-                { href: "/members", label: "Member", icon: Users },
-              ]
-          ).map((item) => {
-            const Icon = item.icon;
-            const active = isRouteActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-semibold ${
-                  active ? "text-blue-600" : "text-slate-500"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            );
-          })}
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-semibold text-slate-500"
-          >
-            <Menu className="h-4 w-4" />
-            <span>Menu</span>
-          </button>
-        </nav>
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">{children}</main>
       </div>
 
       {/* Modal Ganti Password (FR-05) */}
