@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Activity, Scale, TrendingDown, TrendingUp } from "lucide-react";
+import { Activity, CheckCircle2, Scale, TrendingDown, TrendingUp } from "lucide-react";
 import type { BodyMetric } from "@/types/database";
 import { calculateBmi } from "@/lib/domain/bmi";
 import { formatDateId } from "@/lib/domain/format";
@@ -222,9 +222,10 @@ export function BmiQuickPanel({
           </button>
         </div>
         {savedNotice && (
-          <p className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1.5">
-            {savedNotice}
-          </p>
+          <div className="animate-scan-pop flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-xl px-3.5 py-2.5 shadow-xs">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Selesai! {savedNotice}</span>
+          </div>
         )}
       </form>
 

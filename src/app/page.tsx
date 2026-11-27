@@ -19,6 +19,7 @@ import {
 import { getCurrentStaff } from "@/lib/auth/session";
 import { buildWhatsAppUrl } from "@/lib/domain/format";
 import { PricingAndFaqSection } from "@/components/landing/PricingSection";
+import { QrWorkflowShowcase } from "@/components/checkin/QrWorkflowShowcase";
 
 export const dynamic = "force-dynamic";
 
@@ -118,6 +119,19 @@ export default async function GymMateLandingPage() {
           </div>
         </div>
       </header>
+
+      {/* Animated 3-Step QR Workflow Showcase */}
+      <section className="mx-auto max-w-5xl px-4 py-10">
+        <div className="mb-5 text-center">
+          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            Lihat Cara Kerjanya: Scan QR, Isi Progres BB/BMI, Selesai!
+          </h2>
+          <p className="mt-1.5 text-sm text-slate-500">
+            Tanpa buku absen manual — cukup 3 langkah cepat di meja kasir.
+          </p>
+        </div>
+        <QrWorkflowShowcase />
+      </section>
 
       {/* Hero Section with Product Mockup */}
       <section className="relative overflow-hidden border-b border-blue-100 bg-gradient-to-b from-blue-50/80 via-white to-white px-4 py-16 lg:py-24">
