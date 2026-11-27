@@ -41,10 +41,10 @@ export default async function MemberPortalPage({
     }));
 
   return (
-    <div className="min-h-screen bg-slate-900 px-4 py-8 text-slate-900">
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-800 px-4 py-8 text-slate-900">
       <div className="mx-auto max-w-md space-y-5">
         <div className="flex items-center justify-center gap-2 text-white">
-          <Dumbbell className="h-6 w-6 text-emerald-400" />
+          <Dumbbell className="h-6 w-6 text-blue-100" />
           <span className="text-lg font-bold">{settings.name}</span>
         </div>
 
@@ -61,11 +61,11 @@ export default async function MemberPortalPage({
             <QrCodeBox value={member.member_code} size={220} />
           </div>
 
-          <div className="mb-3 w-full rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5">
-            <p className="text-[11px] font-medium text-emerald-800">
+          <div className="mb-3 w-full rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5">
+            <p className="text-[11px] font-medium text-blue-700">
               ID Presensi Manual
             </p>
-            <p className="font-mono text-lg font-extrabold tracking-wider text-emerald-900">
+            <p className="font-mono text-lg font-extrabold tracking-wider text-blue-900">
               {member.member_code}
             </p>
           </div>
@@ -75,7 +75,7 @@ export default async function MemberPortalPage({
             kasir untuk presensi manual
           </p>
 
-          <div className="mt-5 grid w-full grid-cols-2 gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
+          <div className="mt-5 grid w-full grid-cols-2 gap-3 rounded-2xl bg-blue-50/60 p-4 text-sm">
             <div>
               <p className="text-xs text-slate-500">Masa Aktif s/d</p>
               <p className="font-bold text-slate-900">
@@ -84,16 +84,16 @@ export default async function MemberPortalPage({
             </div>
             <div>
               <p className="text-xs text-slate-500">Sisa Hari</p>
-              <p className="font-bold text-emerald-600">
+              <p className="font-bold text-blue-600">
                 {member.status_info.remaining_days !== null &&
                 member.status_info.remaining_days >= 0
                   ? `${member.status_info.remaining_days} hari`
                   : "Habis"}
               </p>
             </div>
-            <div className="col-span-2 border-t border-slate-200 pt-2">
+            <div className="col-span-2 border-t border-blue-100 pt-2">
               <p className="text-xs text-slate-500">Kode Referral Anda</p>
-              <p className="font-mono font-bold text-emerald-700">
+              <p className="font-mono font-bold text-blue-700">
                 {member.referral_code || "-"}
               </p>
             </div>

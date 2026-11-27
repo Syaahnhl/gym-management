@@ -36,14 +36,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100/70 px-4 py-12">
+      <div className="w-full max-w-md rounded-2xl border border-blue-100 bg-white p-8 shadow-xl shadow-blue-600/10">
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-slate-950">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/20">
             <Dumbbell className="h-7 w-7" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-slate-900">
-            Sistem Manajemen Gym
+            GymMate
           </h1>
           <p className="mt-1 text-sm text-slate-500">
             Masuk menggunakan akun Owner atau Kasir
@@ -61,7 +61,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="nama@gym.id"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
             />
           </div>
           <div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
             />
           </div>
 
@@ -87,14 +87,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-emerald-600 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
+            className="w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
           >
             {loading ? "Memproses..." : "Masuk"}
           </button>
         </form>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
-          <p className="font-semibold text-slate-800">Akun Contoh (Demo):</p>
+        <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50/60 p-3 text-xs text-slate-600">
+          <p className="font-semibold text-blue-900">Akun Contoh (Demo):</p>
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
@@ -102,7 +102,7 @@ export default function LoginPage() {
                 setEmail("owner@ironpeak.id");
                 setPassword("gym123456");
               }}
-              className="rounded-md border border-slate-300 bg-white px-2.5 py-1 font-medium hover:bg-slate-100"
+              className="rounded-md border border-blue-200 bg-white px-2.5 py-1 font-medium text-blue-700 hover:bg-blue-50"
             >
               Isi Akun Owner
             </button>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                 setEmail("kasir1@ironpeak.id");
                 setPassword("gym123456");
               }}
-              className="rounded-md border border-slate-300 bg-white px-2.5 py-1 font-medium hover:bg-slate-100"
+              className="rounded-md border border-blue-200 bg-white px-2.5 py-1 font-medium text-blue-700 hover:bg-blue-50"
             >
               Isi Akun Kasir 1
             </button>

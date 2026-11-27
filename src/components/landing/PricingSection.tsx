@@ -89,30 +89,30 @@ export function PricingAndFaqSection({
     <>
       <section
         id="harga"
-        className="border-y border-slate-800 bg-slate-900/40 px-4 py-20"
+        className="border-y border-blue-100 bg-blue-50/50 px-4 py-20"
       >
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+            <span className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold text-blue-700 shadow-sm">
               Harga Transparan
             </span>
-            <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
               Pilih Paket Langganan GymMate
             </h2>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-slate-600">
               Tanpa biaya tersembunyi. Mulai dari Rp 5.000-an/hari untuk
               mengamankan kas & meningkatkan perpanjangan member.
             </p>
 
             {/* Billing Toggle */}
-            <div className="mt-8 inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-1.5">
+            <div className="mt-8 inline-flex items-center gap-2 rounded-2xl border border-blue-200 bg-white p-1.5 shadow-sm">
               <button
                 type="button"
                 onClick={() => setAnnual(false)}
                 className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
                   !annual
-                    ? "bg-emerald-500 text-slate-950"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-600 hover:text-blue-700"
                 }`}
               >
                 Bayar Bulanan
@@ -122,8 +122,8 @@ export function PricingAndFaqSection({
                 onClick={() => setAnnual(true)}
                 className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
                   annual
-                    ? "bg-emerald-500 text-slate-950"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-600 hover:text-blue-700"
                 }`}
               >
                 Tahunan (Hemat 2 Bulan)
@@ -145,44 +145,44 @@ export function PricingAndFaqSection({
               return (
                 <div
                   key={plan.name}
-                  className={`flex flex-col justify-between rounded-3xl border p-7 transition ${
+                  className={`flex flex-col justify-between rounded-3xl border bg-white p-7 transition ${
                     plan.popular
-                      ? "border-emerald-500 bg-slate-900 shadow-2xl shadow-emerald-500/10"
-                      : "border-slate-800 bg-slate-900/70 hover:border-slate-700"
+                      ? "border-2 border-blue-600 shadow-2xl shadow-blue-600/15"
+                      : "border-blue-100 shadow-sm hover:border-blue-300"
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-white">
+                      <h3 className="text-xl font-bold text-slate-900">
                         {plan.name}
                       </h3>
                       <span
                         className={`rounded-full px-3 py-0.5 text-xs font-bold ${
                           plan.popular
-                            ? "bg-emerald-500 text-slate-950"
-                            : "bg-slate-800 text-slate-300"
+                            ? "bg-blue-600 text-white"
+                            : "bg-blue-50 text-blue-700"
                         }`}
                       >
                         {plan.badge}
                       </span>
                     </div>
                     <div className="mt-5 flex items-baseline gap-1.5">
-                      <span className="text-3xl font-extrabold text-emerald-400">
+                      <span className="text-3xl font-extrabold text-blue-600">
                         {formatRupiah(displayPrice)}
                       </span>
-                      <span className="text-xs text-slate-400">/ bulan</span>
+                      <span className="text-xs text-slate-500">/ bulan</span>
                     </div>
                     <p className="mt-1 text-xs text-slate-500">
                       {annual
                         ? `Ditagih ${formatRupiah(plan.monthly * 10)} per tahun (gratis 2 bulan)`
                         : "Tagihan per bulan, bisa upgrade kapan saja"}
                     </p>
-                    <p className="mt-4 text-sm text-slate-300">{plan.desc}</p>
+                    <p className="mt-4 text-sm text-slate-600">{plan.desc}</p>
 
-                    <ul className="mt-6 space-y-2.5 text-xs text-slate-300">
+                    <ul className="mt-6 space-y-2.5 text-xs text-slate-700">
                       {plan.features.map((feat) => (
                         <li key={feat} className="flex items-start gap-2">
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
                           <span>{feat}</span>
                         </li>
                       ))}
@@ -196,8 +196,8 @@ export function PricingAndFaqSection({
                       rel="noreferrer"
                       className={`block rounded-xl py-2.5 text-center text-sm font-bold transition ${
                         plan.popular
-                          ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400"
-                          : "bg-slate-800 text-white hover:bg-slate-700"
+                          ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-600/20"
+                          : "bg-blue-50 text-blue-700 hover:bg-blue-100"
                       }`}
                     >
                       Pilih Paket {plan.name}
@@ -206,14 +206,14 @@ export function PricingAndFaqSection({
                       <button
                         type="button"
                         onClick={onTryDemo}
-                        className="block w-full rounded-xl border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                        className="block w-full rounded-xl border border-blue-200 bg-white py-2 text-center text-xs font-semibold text-blue-700 hover:bg-blue-50"
                       >
                         Coba Demo Gratis
                       </button>
                     ) : (
                       <Link
                         href="/login"
-                        className="block rounded-xl border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                        className="block rounded-xl border border-blue-200 bg-white py-2 text-center text-xs font-semibold text-blue-700 hover:bg-blue-50"
                       >
                         Coba Demo Gratis
                       </Link>
@@ -229,10 +229,10 @@ export function PricingAndFaqSection({
       {/* FAQ Section */}
       <section id="faq" className="mx-auto max-w-4xl px-4 py-20">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-slate-900">
             Pertanyaan Umum (FAQ)
           </h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-600">
             Hal yang paling sering ditanyakan pemilik gym sebelum memakai GymMate
           </p>
         </div>
@@ -242,22 +242,22 @@ export function PricingAndFaqSection({
             return (
               <div
                 key={item.q}
-                className="rounded-2xl border border-slate-800 bg-slate-900/70"
+                className="rounded-2xl border border-blue-100 bg-white shadow-sm"
               >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-white"
+                  className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-slate-900"
                 >
                   <span>{item.q}</span>
                   <ChevronDown
-                    className={`h-4 w-4 text-slate-400 transition ${
+                    className={`h-4 w-4 text-blue-600 transition ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="border-t border-slate-800 px-5 py-4 text-sm leading-relaxed text-slate-300">
+                  <div className="border-t border-blue-100 px-5 py-4 text-sm leading-relaxed text-slate-600">
                     {item.a}
                   </div>
                 )}

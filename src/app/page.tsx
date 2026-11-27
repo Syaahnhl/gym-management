@@ -74,35 +74,35 @@ export default async function GymMateLandingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-white text-slate-900">
       {/* Navbar */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-blue-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-slate-950">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-600/20">
               <Dumbbell className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-base font-extrabold leading-tight tracking-tight text-white">
+              <p className="text-base font-extrabold leading-tight tracking-tight text-slate-900">
                 GymMate
               </p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 Platform Manajemen Gym Modern
               </p>
             </div>
           </div>
 
-          <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
-            <a href="#perbandingan" className="hover:text-white">
+          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+            <a href="#perbandingan" className="hover:text-blue-600">
               Solusi
             </a>
-            <a href="#fitur" className="hover:text-white">
+            <a href="#fitur" className="hover:text-blue-600">
               Fitur
             </a>
-            <a href="#harga" className="hover:text-white">
+            <a href="#harga" className="hover:text-blue-600">
               Harga
             </a>
-            <a href="#faq" className="hover:text-white">
+            <a href="#faq" className="hover:text-blue-600">
               FAQ
             </a>
           </nav>
@@ -110,7 +110,7 @@ export default async function GymMateLandingPage() {
           <div className="flex items-center gap-2">
             <Link
               href={staff ? "/dashboard" : "/login"}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700"
             >
               {staff ? "Buka Dashboard" : "Coba Demo Live"}{" "}
               <ArrowRight className="h-4 w-4" />
@@ -120,18 +120,18 @@ export default async function GymMateLandingPage() {
       </header>
 
       {/* Hero Section with Product Mockup */}
-      <section className="relative overflow-hidden border-b border-slate-800 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 px-4 py-16 lg:py-24">
+      <section className="relative overflow-hidden border-b border-blue-100 bg-gradient-to-b from-blue-50/80 via-white to-white px-4 py-16 lg:py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-300">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-1.5 text-xs font-semibold text-blue-700 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-blue-600" />
               Platform SaaS Manajemen Gym untuk Owner & Front-Desk
             </div>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:leading-[1.12]">
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:leading-[1.12]">
               Kelola Bisnis Gym Tanpa Drama{" "}
-              <span className="text-emerald-400">Selisih Kas</span>
+              <span className="text-blue-600">Selisih Kas</span>
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
               <strong>GymMate</strong> menggantikan buku catatan, Excel, dan
               rekap WhatsApp manual. Pantau member aktif, presensi QR/ID kurang
               dari 5 detik, POS produk, hingga laba rugi bersih secara
@@ -140,13 +140,13 @@ export default async function GymMateLandingPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
+                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition hover:bg-blue-700"
               >
                 Coba Demo Live Gratis <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#harga"
-                className="rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+                className="rounded-xl border border-blue-200 bg-white px-6 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-50"
               >
                 Lihat Harga Bulanan
               </a>
@@ -154,37 +154,37 @@ export default async function GymMateLandingPage() {
                 href={waSalesUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-800 px-5 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-900"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
-                <MessageCircle className="h-4 w-4 text-emerald-400" />
+                <MessageCircle className="h-4 w-4 text-blue-600" />
                 Konsultasi WA
               </a>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-slate-800/80 pt-6">
+            <div className="mt-10 grid grid-cols-3 gap-4 border-t border-blue-100 pt-6">
               <div>
-                <p className="text-2xl font-extrabold text-white">&lt; 5 dtk</p>
-                <p className="text-xs text-slate-400">Presensi QR & ID</p>
+                <p className="text-2xl font-extrabold text-slate-900">&lt; 5 dtk</p>
+                <p className="text-xs text-slate-500">Presensi QR & ID</p>
               </div>
               <div>
-                <p className="text-2xl font-extrabold text-emerald-400">100%</p>
-                <p className="text-xs text-slate-400">Kas Shift Terlacak</p>
+                <p className="text-2xl font-extrabold text-blue-600">100%</p>
+                <p className="text-xs text-slate-500">Kas Shift Terlacak</p>
               </div>
               <div>
-                <p className="text-2xl font-extrabold text-white">2.000+</p>
-                <p className="text-xs text-slate-400">Member per Cabang</p>
+                <p className="text-2xl font-extrabold text-slate-900">2.000+</p>
+                <p className="text-xs text-slate-500">Member per Cabang</p>
               </div>
             </div>
           </div>
 
           {/* Interactive-style SaaS Dashboard Mockup */}
           <div className="lg:col-span-5">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-5 shadow-2xl shadow-emerald-500/10">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="rounded-3xl border border-blue-200 bg-white p-5 shadow-2xl shadow-blue-600/10">
+              <div className="flex items-center justify-between border-b border-blue-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-300" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
                 </div>
                 <span className="font-mono text-[11px] text-slate-400">
                   app.gymmate.id/dashboard
@@ -192,44 +192,44 @@ export default async function GymMateLandingPage() {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-3.5">
-                  <p className="text-[11px] text-slate-400">
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-3.5">
+                  <p className="text-[11px] text-slate-500">
                     Pendapatan Bulan Ini
                   </p>
-                  <p className="mt-1 text-lg font-extrabold text-emerald-400">
+                  <p className="mt-1 text-lg font-extrabold text-blue-600">
                     Rp 42.850.000
                   </p>
                 </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-3.5">
-                  <p className="text-[11px] text-slate-400">Member Aktif</p>
-                  <p className="mt-1 text-lg font-extrabold text-sky-400">
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-3.5">
+                  <p className="text-[11px] text-slate-500">Member Aktif</p>
+                  <p className="mt-1 text-lg font-extrabold text-slate-900">
                     384 orang
                   </p>
                 </div>
               </div>
 
-              <div className="mt-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
+              <div className="mt-3 rounded-2xl border border-blue-200 bg-blue-600 p-3.5 text-white">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <QrCode className="h-5 w-5 text-emerald-400" />
+                    <QrCode className="h-5 w-5 text-blue-100" />
                     <div>
                       <p className="text-xs font-bold text-white">
                         Presensi Berhasil · GYM-00012
                       </p>
-                      <p className="text-[11px] text-emerald-200">
+                      <p className="text-[11px] text-blue-100">
                         Andi Pratama · Sisa 21 hari aktif
                       </p>
                     </div>
                   </div>
-                  <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-slate-950">
+                  <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-blue-700">
                     AKTIF
                   </span>
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/80 px-3.5 py-2.5 text-xs">
-                <span className="text-slate-400">Shift Kasir Pagi (Siti)</span>
-                <span className="font-semibold text-emerald-400">
+              <div className="mt-3 flex items-center justify-between rounded-2xl border border-blue-100 bg-blue-50/40 px-3.5 py-2.5 text-xs">
+                <span className="text-slate-600">Shift Kasir Pagi (Siti)</span>
+                <span className="font-semibold text-blue-600">
                   Selisih: Rp 0 ✓
                 </span>
               </div>
@@ -241,20 +241,20 @@ export default async function GymMateLandingPage() {
       {/* Before vs After Comparison */}
       <section id="perbandingan" className="mx-auto max-w-6xl px-4 py-20">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-slate-900">
             Kenapa Pemilik Gym Beralih ke GymMate?
           </h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-600">
             Bandingkan operasional harian sebelum dan sesudah memakai GymMate
           </p>
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          <div className="rounded-3xl border border-rose-500/20 bg-rose-950/10 p-7">
-            <h3 className="text-lg font-bold text-rose-300">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-7">
+            <h3 className="text-lg font-bold text-slate-800">
               Cara Lama (Buku / Excel / Chat WA)
             </h3>
-            <ul className="mt-4 space-y-3 text-sm text-slate-300">
+            <ul className="mt-4 space-y-3 text-sm text-slate-600">
               {[
                 "Owner tidak tahu pasti berapa member aktif & omzet riil hari ini",
                 "Kasir kewalahan cek member aktif atau sudah habis di Excel",
@@ -262,18 +262,18 @@ export default async function GymMateLandingPage() {
                 "Member lupa masa aktif habis karena tidak ada pengingat rutin",
               ].map((txt) => (
                 <li key={txt} className="flex items-start gap-2.5">
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
+                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
                   <span>{txt}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="rounded-3xl border border-emerald-500/30 bg-emerald-950/15 p-7">
-            <h3 className="text-lg font-bold text-emerald-300">
+          <div className="rounded-3xl border border-blue-200 bg-blue-50/70 p-7">
+            <h3 className="text-lg font-bold text-blue-800">
               Dengan Platform GymMate
             </h3>
-            <ul className="mt-4 space-y-3 text-sm text-slate-200">
+            <ul className="mt-4 space-y-3 text-sm text-slate-700">
               {[
                 "Dashboard owner real-time: omzet, member baru, churn, & laba rugi",
                 "Presensi QR & ID manual < 5 detik, otomatis tolak member habis",
@@ -281,7 +281,7 @@ export default async function GymMateLandingPage() {
                 "Pengingat WhatsApp H-7 + Portal Member mandiri untuk perpanjang QRIS",
               ].map((txt) => (
                 <li key={txt} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
                   <span>{txt}</span>
                 </li>
               ))}
@@ -309,12 +309,12 @@ export default async function GymMateLandingPage() {
           ].map((r) => (
             <div
               key={r.role}
-              className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6"
+              className="rounded-2xl border border-blue-100 bg-white p-6 shadow-sm"
             >
-              <p className="text-sm font-extrabold text-emerald-400">
+              <p className="text-sm font-extrabold text-blue-600">
                 {r.role}
               </p>
-              <p className="mt-2 text-sm text-slate-300">{r.desc}</p>
+              <p className="mt-2 text-sm text-slate-600">{r.desc}</p>
             </div>
           ))}
         </div>
@@ -323,10 +323,10 @@ export default async function GymMateLandingPage() {
       {/* Semua Fitur Platform */}
       <section id="fitur" className="mx-auto max-w-6xl px-4 py-16">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-slate-900">
             Semua Fitur di Platform GymMate
           </h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-slate-600">
             Satu aplikasi web responsif untuk laptop, tablet kasir, dan HP
           </p>
         </div>
@@ -337,15 +337,15 @@ export default async function GymMateLandingPage() {
             return (
               <div
                 key={f.title}
-                className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 transition hover:border-emerald-500/40"
+                className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-base font-bold text-white">
+                <h3 className="mt-4 text-base font-bold text-slate-900">
                   {f.title}
                 </h3>
-                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                <p className="mt-2 text-xs leading-relaxed text-slate-600">
                   {f.desc}
                 </p>
               </div>
@@ -359,18 +359,18 @@ export default async function GymMateLandingPage() {
 
       {/* Final CTA Banner */}
       <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/60 to-slate-900 p-8 text-center sm:p-12">
+        <div className="rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center text-white shadow-xl shadow-blue-600/20 sm:p-12">
           <h2 className="text-2xl font-extrabold text-white sm:text-3xl">
             Siap Merapikan Operasional Gym Anda?
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-slate-300">
+          <p className="mx-auto mt-3 max-w-xl text-sm text-blue-100">
             Coba langsung seluruh fitur GymMate lewat demo interaktif sekarang,
             atau hubungi tim kami untuk setup gym Anda.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               href="/login"
-              className="rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-emerald-400"
+              className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-700 shadow-sm hover:bg-blue-50"
             >
               Coba Demo Live Sekarang
             </Link>
@@ -378,9 +378,9 @@ export default async function GymMateLandingPage() {
               href={waSalesUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-xl border border-blue-400 bg-blue-700/50 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-800/60"
             >
-              <MessageCircle className="h-4 w-4 text-emerald-400" />
+              <MessageCircle className="h-4 w-4 text-white" />
               Chat Tim GymMate
             </a>
           </div>
@@ -388,20 +388,20 @@ export default async function GymMateLandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 px-4 py-10">
+      <footer className="border-t border-blue-100 bg-white px-4 py-10">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 font-bold text-white">
-              <Dumbbell className="h-4 w-4 text-emerald-400" />
+            <div className="flex items-center gap-2 font-bold text-slate-900">
+              <Dumbbell className="h-4 w-4 text-blue-600" />
               GymMate
             </div>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-500">
               Platform Manajemen Gym Modern untuk Owner, Kasir & Member
             </p>
           </div>
           <Link
             href="/login"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 px-4 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100"
           >
             <CreditCard className="h-4 w-4" />
             Masuk ke Demo Aplikasi

@@ -121,14 +121,14 @@ export function AppShell({
   }
 
   const sidebarContent = (
-    <div className="flex h-full flex-col bg-slate-900 text-slate-100">
-      <div className="flex items-center gap-3 border-b border-slate-800 px-4 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-slate-950">
+    <div className="flex h-full flex-col border-r border-blue-100 bg-white text-slate-800">
+      <div className="flex items-center gap-3 border-b border-blue-100 px-4 py-4">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
           <Dumbbell className="h-5 w-5" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold">{settings.name}</p>
-          <p className="text-xs text-slate-400">
+          <p className="truncate text-sm font-bold text-slate-900">{settings.name}</p>
+          <p className="text-xs text-slate-500">
             {staff.role === "owner" ? "Owner" : "Kasir"} · {staff.name.split(" ")[0]}
           </p>
         </div>
@@ -147,8 +147,8 @@ export function AppShell({
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 active
-                  ? "bg-emerald-500 text-slate-950"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"
               }`}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -158,14 +158,14 @@ export function AppShell({
         })}
       </nav>
 
-      <div className="border-t border-slate-800 p-3 space-y-2">
+      <div className="space-y-2 border-t border-blue-100 p-3">
         <Link
           href="/shift"
           onClick={() => setMobileOpen(false)}
-          className={`block rounded-lg px-3 py-2 text-xs font-medium ${
+          className={`block rounded-lg border px-3 py-2 text-xs font-medium ${
             openShift
-              ? "bg-emerald-950/70 text-emerald-300 border border-emerald-800"
-              : "bg-amber-950/70 text-amber-300 border border-amber-800"
+              ? "border-blue-200 bg-blue-50 text-blue-700"
+              : "border-amber-200 bg-amber-50 text-amber-800"
           }`}
         >
           {openShift ? "Shift Terbuka (Aktif)" : "Shift Belum Dibuka"}
@@ -174,7 +174,7 @@ export function AppShell({
           <button
             type="button"
             onClick={() => setPwModal(true)}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-slate-800 px-2.5 py-2 text-xs font-medium text-slate-200 hover:bg-slate-700"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-blue-200 bg-white px-2.5 py-2 text-xs font-medium text-blue-700 hover:bg-blue-50"
           >
             <KeyRound className="h-3.5 w-3.5" />
             Password
@@ -182,7 +182,7 @@ export function AppShell({
           <button
             type="button"
             onClick={handleLogout}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-rose-600/90 px-2.5 py-2 text-xs font-medium text-white hover:bg-rose-600"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-2.5 py-2 text-xs font-medium text-white hover:bg-rose-700"
           >
             <LogOut className="h-3.5 w-3.5" />
             Keluar
@@ -232,7 +232,7 @@ export function AppShell({
           <span className="text-sm font-bold text-slate-900">{settings.name}</span>
           <Link
             href="/checkin"
-            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white"
+            className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white"
           >
             Check-in
           </Link>
