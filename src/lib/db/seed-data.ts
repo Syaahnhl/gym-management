@@ -4,6 +4,7 @@ import { toZonedTime } from "date-fns-tz";
 import { GYM_TIMEZONE, addDaysToDateStr } from "@/lib/domain/membership";
 import type {
   ActivityLog,
+  BodyMetric,
   Branch,
   Checkin,
   ClassBooking,
@@ -11,6 +12,8 @@ import type {
   Expense,
   Freeze,
   GymSettings,
+  Lead,
+  Locker,
   Member,
   Membership,
   Package,
@@ -53,6 +56,9 @@ export interface LocalDbSchema {
   branches: Branch[];
   checkins: Checkin[];
   shifts: Shift[];
+  leads: Lead[];
+  lockers: Locker[];
+  body_metrics: BodyMetric[];
   activity_logs: ActivityLog[];
 }
 
@@ -624,6 +630,62 @@ export function createInitialSeedData(): LocalDbSchema {
     ],
     checkins,
     shifts,
+    leads: [
+      {
+        id: "lead-1",
+        full_name: "Kevin Wijaya",
+        phone: "081233445566",
+        source: "Instagram Ads",
+        interest_package: "Paket 3 Bulan",
+        status: "trial",
+        notes: "Mau coba alat kaki & konsultasi PT",
+        trial_date: todayStr,
+        created_at: now.toISOString(),
+      },
+      {
+        id: "lead-2",
+        full_name: "Nadia Kusuma",
+        phone: "081377889900",
+        source: "Walk-in",
+        interest_package: "Paket Bulanan",
+        status: "followup",
+        notes: "Tanya jadwal kelas Yoga malam",
+        trial_date: null,
+        created_at: subDays(now, 1).toISOString(),
+      },
+    ],
+    lockers: Array.from({ length: 12 }, (_, idx) => ({
+      id: `lock-${idx + 1}`,
+      code: `L-${String(idx + 1).padStart(2, "0")}`,
+      member_id: idx === 0 ? members[0]?.id ?? null : null,
+      member_name: idx === 0 ? members[0]?.full_name ?? null : null,
+      assigned_at: idx === 0 ? now.toISOString() : null,
+      status: idx === 0 ? ("occupied" as const) : ("available" as const),
+    })),
+    body_metrics: [
+      {
+        id: "bm-1",
+        member_id: members[0]?.id ?? "mem-1",
+        recorded_at: subDays(now, 30).toISOString().slice(0, 10),
+        weight_kg: 78.5,
+        height_cm: 175,
+        body_fat_percent: 21.4,
+        muscle_mass_kg: 34.2,
+        waist_cm: 86,
+        notes: "Pengukuran awal program hypertrophy",
+      },
+      {
+        id: "bm-2",
+        member_id: members[0]?.id ?? "mem-1",
+        recorded_at: todayStr,
+        weight_kg: 76.8,
+        height_cm: 175,
+        body_fat_percent: 19.2,
+        muscle_mass_kg: 35.1,
+        waist_cm: 83,
+        notes: "Turun lemak 2.2%, massa otot naik",
+      },
+    ],
     activity_logs: [
       {
         id: "88888888-8888-8888-8888-888888888801",

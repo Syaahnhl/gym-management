@@ -392,3 +392,40 @@ export interface MemberStatusInfo {
   remaining_days: number | null;
   can_checkin: boolean;
 }
+
+export type LeadStatus = "baru" | "followup" | "trial" | "converted" | "lost";
+
+export interface Lead {
+  id: string;
+  full_name: string;
+  phone: string;
+  source: string;
+  interest_package: string;
+  status: LeadStatus;
+  notes: string | null;
+  trial_date: string | null;
+  created_at: string;
+}
+
+export type LockerStatus = "available" | "occupied" | "maintenance";
+
+export interface Locker {
+  id: string;
+  code: string;
+  member_id: string | null;
+  member_name: string | null;
+  assigned_at: string | null;
+  status: LockerStatus;
+}
+
+export interface BodyMetric {
+  id: string;
+  member_id: string;
+  recorded_at: string;
+  weight_kg: number;
+  height_cm: number;
+  body_fat_percent: number | null;
+  muscle_mass_kg: number | null;
+  waist_cm: number | null;
+  notes: string | null;
+}

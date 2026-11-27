@@ -66,6 +66,9 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle },
       { href: "/trainers", label: "Personal Trainer", icon: Dumbbell },
       { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays },
+      { href: "/leads", label: "CRM Prospek & Trial", icon: UserPlus },
+      { href: "/lockers", label: "Manajemen Loker", icon: KeyRound },
+      { href: "/body-metrics", label: "Body Metrics & BMI", icon: Activity },
     ],
   },
   {

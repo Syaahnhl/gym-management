@@ -40,6 +40,18 @@ export function readLocalDb(): LocalDbSchema {
   if (!parsed.class_bookings) parsed.class_bookings = [];
   if (!parsed.payment_intents) parsed.payment_intents = [];
   if (!parsed.whatsapp_logs) parsed.whatsapp_logs = [];
+  if (!parsed.leads) parsed.leads = [];
+  if (!parsed.lockers) {
+    parsed.lockers = Array.from({ length: 12 }, (_, idx) => ({
+      id: `lock-${idx + 1}`,
+      code: `L-${String(idx + 1).padStart(2, "0")}`,
+      member_id: null,
+      member_name: null,
+      assigned_at: null,
+      status: "available" as const,
+    }));
+  }
+  if (!parsed.body_metrics) parsed.body_metrics = [];
   if (!parsed.branches) {
     parsed.branches = [
       {
