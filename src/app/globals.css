@@ -8,6 +8,36 @@
   }
 }
 
+@keyframes qrScanLine {
+  0%, 100% {
+    top: 10%;
+    opacity: 0.85;
+  }
+  50% {
+    top: 86%;
+    opacity: 1;
+  }
+}
+
+@keyframes scanSuccessPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-qr-scan {
+  animation: qrScanLine 2.2s ease-in-out infinite;
+}
+
+.animate-scan-pop {
+  animation: scanSuccessPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media print {
   .no-print {
     display: none !important;

@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Camera, CameraOff, CheckCircle2, Search, XCircle } from "lucide-react";
-import type { ComputedMemberStatus } from "@/types/database";
+import type { BodyMetric, ComputedMemberStatus } from "@/types/database";
 import type { MemberWithStatus } from "@/lib/db/service";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDateId, formatDateTimeWib } from "@/lib/domain/format";
+import { QrScanAnimationBox } from "@/components/checkin/QrScanAnimationBox";
+import { BmiQuickPanel } from "@/components/checkin/BmiQuickPanel";
 
 interface QuickMember {
   id: string;
@@ -47,6 +49,9 @@ export function CheckinClient({
   const [result, setResult] = useState<CheckinResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkins, setCheckins] = useState<TodayCheckinRow[]>(initialCheckins);
+  const [isScanAnimating, setIsScanAnimating] = useState(false);
+  const [memberMetrics, setMemberMetrics] = useState<BodyMetric[]>([]);
+  const [savingMetric, setSavingMetric] = useState(false);
   const scanRef = useRef<HTMLInputElement>(null);
   const lastScanRef = useRef<{ code: string; at: number }>({ code: "", at: 0 });
 
@@ -81,7 +86,17 @@ export function CheckinClient({
       return;
     }
     setResult(data);
+    if (data.member?.id) {
+      fetch(`/api/body-metrics?member_id=${encodeURIComponent(data.member.id)}`)
+        .then((r) => (r.ok ? r.json() : { metrics: [] }))
+        .then((bm) => setMemberMetrics(Array.isArray(bm.metrics) ? bm.metrics : []))
+        .catch(() => setMemberMetrics([]));
+    } else {
+      setMemberMetrics([]);
+    }
     if (data.allowed && data.checkin) {
+      setIsScanAnimating(true);
+      setTimeout(() => setIsScanAnimating(false), 1200);
       setCheckins((prev) => [
         {
           id: data.checkin.id,
@@ -198,6 +213,18 @@ export function CheckinClient({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Panel Scan & Presensi Manual ID */}
         <div className="space-y-5 rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
+          <QrScanAnimationBox
+            isScanning={isScanAnimating}
+            demoCode={members[0]?.member_code || "GYM-00001"}
+            onSimulateScan={() => {
+              const target =
+                members.find((m) => m.status === "active") || members[0];
+              if (target) {
+                submitCheckin({ query: target.member_code, method: "qr" });
+              }
+            }}
+          />
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -287,10 +314,12 @@ export function CheckinClient({
               </p>
             )}
             {cameraOn && (
-              <div
-                id="qr-reader"
-                className="mt-3 overflow-hidden rounded-xl border border-blue-200 bg-slate-950"
-              />
+              <div className="relative mt-3 overflow-hidden rounded-xl border-2 border-blue-400 bg-slate-950">
+                <div id="qr-reader" className="w-full" />
+                <div className="pointer-events-none absolute inset-0">
+                  <div className="animate-qr-scan absolute inset-x-4 h-0.5 bg-cyan-400 shadow-[0_0_12px_2px_rgba(34,211,238,0.85)]" />
+                </div>
+              </div>
             )}
           </div>
 
@@ -346,7 +375,9 @@ export function CheckinClient({
           )}
 
           {result && (
-            <div className={`rounded-2xl border-2 p-6 shadow-sm ${bannerColor}`}>
+            <div
+              className={`animate-scan-pop rounded-2xl border-2 p-6 shadow-sm ${bannerColor}`}
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   {result.allowed ? (
@@ -383,6 +414,35 @@ export function CheckinClient({
                   </strong>
                 </div>
               </div>
+
+              {result.allowed && (
+                <BmiQuickPanel
+                  memberName={result.member.full_name}
+                  metrics={memberMetrics}
+                  saving={savingMetric}
+                  onSaveMetric={async (payload) => {
+                    setSavingMetric(true);
+                    try {
+                      const res = await fetch("/api/body-metrics", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          member_id: result.member.id,
+                          ...payload,
+                        }),
+                      });
+                      if (res.ok) {
+                        const data = await res.json();
+                        if (data.metric) {
+                          setMemberMetrics((prev) => [data.metric, ...prev]);
+                        }
+                      }
+                    } finally {
+                      setSavingMetric(false);
+                    }
+                  }}
+                />
+              )}
 
               {!result.allowed && result.member.is_active && (
                 <Link

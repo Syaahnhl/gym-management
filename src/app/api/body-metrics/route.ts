@@ -2,6 +2,20 @@ import { NextResponse } from "next/server";
 import { getCurrentStaff } from "@/lib/auth/session";
 import { readLocalDb, writeLocalDb } from "@/lib/db/local-store";
 
+export async function GET(req: Request) {
+  const staff = await getCurrentStaff();
+  if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const memberId = searchParams.get("member_id");
+  const db = readLocalDb();
+  const metrics = memberId
+    ? db.body_metrics.filter((m) => m.member_id === memberId)
+    : db.body_metrics;
+
+  return NextResponse.json({ metrics });
+}
+
 export async function POST(req: Request) {
   const staff = await getCurrentStaff();
   if (!staff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
