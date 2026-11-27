@@ -355,32 +355,12 @@ export function AppShell({
             <span className="text-sm font-bold text-slate-900 lg:hidden">
               {settings.name}
             </span>
-            <span className="hidden text-xs font-semibold text-slate-500 lg:inline">
-              {settings.name} ·{" "}
-              <span className="rounded-md bg-blue-50 px-2 py-0.5 font-bold text-blue-700">
-                {staff.role === "owner"
-                  ? "Panel Owner (Manajemen Gym)"
-                  : "Panel Kasir (Front-Desk & POS)"}
-              </span>
+            <span className="hidden text-xs font-semibold text-slate-600 lg:inline">
+              {settings.name}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            {staff.role === "owner" ? (
-              <>
-                <Link
-                  href="/packages"
-                  className="hidden items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 sm:inline-flex"
-                >
-                  <PackageIcon className="h-3.5 w-3.5" /> Edit Harga &amp; Paket
-                </Link>
-                <Link
-                  href="/reports/profit-loss"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
-                >
-                  <BarChart3 className="h-3.5 w-3.5" /> Laba Rugi
-                </Link>
-              </>
-            ) : (
+            {staff.role === "cashier" && (
               <>
                 <Link
                   href="/pos"
