@@ -6,7 +6,6 @@ import {
   CalendarDays,
   CheckCircle2,
   CreditCard,
-  Dumbbell,
   MessageCircle,
   PauseCircle,
   QrCode,
@@ -21,6 +20,7 @@ import { buildWhatsAppUrl } from "@/lib/domain/format";
 import { PricingAndFaqSection } from "@/components/landing/PricingSection";
 import { QrWorkflowShowcase } from "@/components/checkin/QrWorkflowShowcase";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
+import { GymMateLogo } from "@/components/ui/GymMateLogo";
 
 export const dynamic = "force-dynamic";
 
@@ -376,7 +376,7 @@ export default async function GymMateLandingPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 font-bold text-slate-900">
-              <Dumbbell className="h-4 w-4 text-blue-600" />
+              <GymMateLogo className="h-6 w-6" />
               GymMate
             </div>
             <p className="mt-1 text-xs text-slate-500">

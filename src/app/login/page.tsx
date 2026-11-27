@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Dumbbell } from "lucide-react";
+import { GymMateLogo } from "@/components/ui/GymMateLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,8 +39,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100/70 px-4 py-12">
       <div className="w-full max-w-md rounded-2xl border border-blue-100 bg-white p-8 shadow-xl shadow-blue-600/10">
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/20">
-            <Dumbbell className="h-7 w-7" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 border border-blue-100 shadow-sm">
+            <GymMateLogo className="h-10 w-10" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-slate-900">
             GymMate

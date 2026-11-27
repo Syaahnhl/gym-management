@@ -33,6 +33,7 @@ import {
   Warehouse,
   X,
 } from "lucide-react";
+import { GymMateLogo } from "@/components/ui/GymMateLogo";
 import type { GymSettings, SafeStaffUser, Shift } from "@/types/database";
 
 interface NavItem {
@@ -186,8 +187,8 @@ export function AppShell({
   const sidebarContent = (
     <div className="flex h-full flex-col border-r border-blue-100 bg-white text-slate-800">
       <div className="flex items-center gap-3 border-b border-blue-100 px-4 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
-          <Dumbbell className="h-5 w-5" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 border border-blue-100 shadow-xs">
+          <GymMateLogo className="h-7 w-7" />
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-bold text-slate-900">{settings.name}</p>

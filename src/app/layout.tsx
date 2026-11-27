@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "GymMate — Platform Manajemen Gym Modern",
   description:
     "Platform SaaS manajemen gym untuk owner dan kasir: member, presensi QR & ID, POS produk, shift kasir, freeze, PT, kelas, dan laporan laba rugi.",
+  icons: {
+    icon: "/gymmate-logo.svg",
+  },
 };
 
 export default function RootLayout({

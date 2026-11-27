@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Dumbbell } from "lucide-react";
+import { GymMateLogo } from "@/components/ui/GymMateLogo";
 import { readLocalDb } from "@/lib/db/local-store";
 import { getGymSettings, getMemberByPortalToken } from "@/lib/db/service";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -43,8 +43,10 @@ export default async function MemberPortalPage({
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-800 px-4 py-8 text-slate-900">
       <div className="mx-auto max-w-md space-y-5">
-        <div className="flex items-center justify-center gap-2 text-white">
-          <Dumbbell className="h-6 w-6 text-blue-100" />
+        <div className="flex items-center justify-center gap-2.5 text-white">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-xs border border-white/20">
+            <GymMateLogo className="h-6 w-6" variant="on-blue" />
+          </div>
           <span className="text-lg font-bold">{settings.name}</span>
         </div>
 

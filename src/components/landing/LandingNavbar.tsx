@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
-  Dumbbell,
   Menu,
   QrCode,
   Scale,
@@ -13,6 +12,7 @@ import {
   UserCheck,
   X,
 } from "lucide-react";
+import { GymMateLogo } from "@/components/ui/GymMateLogo";
 
 const SUB_FEATURES = [
   {
@@ -77,8 +77,8 @@ export function LandingNavbar({
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm shrink-0">
-            <Dumbbell className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-xs shrink-0">
+            <GymMateLogo className="w-7 h-7" />
           </div>
           <div className="min-w-0">
             <span className="font-bold text-base sm:text-lg text-slate-900 block leading-none">
