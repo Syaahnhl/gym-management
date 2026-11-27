@@ -2,7 +2,51 @@ export type StaffRole = "owner" | "cashier";
 export type PackageType = "membership" | "daily";
 export type Gender = "L" | "P";
 export type MembershipStatus = "active" | "void";
-export type TransactionType = "registration" | "renewal" | "daily";
+export type TransactionType =
+  | "registration"
+  | "renewal"
+  | "daily"
+  | "pos"
+  | "mixed";
+export type ProductCategory = "minuman" | "suplemen" | "merchandise" | "sewa";
+export type StockMovementType = "in" | "sale" | "void" | "adjustment";
+
+export interface Product {
+  id: string;
+  name: string;
+  category: ProductCategory;
+  sku: string | null;
+  sell_price: number;
+  cost_price: number;
+  stock: number;
+  min_stock: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface StockMovement {
+  id: string;
+  product_id: string;
+  type: StockMovementType;
+  qty: number;
+  reason: string | null;
+  reference_id: string | null;
+  user_id: string | null;
+  created_at: string;
+}
+
+export interface TransactionItem {
+  id: string;
+  transaction_id: string;
+  item_type: "package" | "product";
+  item_id: string;
+  name: string;
+  qty: number;
+  unit_price: number;
+  cost_price: number;
+  discount: number;
+  subtotal: number;
+}
 export type PaymentMethod = "cash" | "qris" | "transfer" | "card";
 export type TransactionStatus = "paid" | "void";
 export type CheckinMethod = "qr" | "search" | "daily";
@@ -13,7 +57,84 @@ export type ComputedMemberStatus =
   | "expiring"
   | "expired"
   | "not_started"
+  | "frozen"
   | "inactive";
+
+export type FreezeReason = "sakit" | "dinas" | "lainnya";
+export type FreezeStatus = "active" | "finished" | "cancelled";
+
+export interface Freeze {
+  id: string;
+  member_id: string;
+  membership_id: string;
+  start_date: string; // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
+  actual_end_date: string | null;
+  reason: FreezeReason;
+  reason_notes?: string | null;
+  attachment_url: string | null;
+  fee: number;
+  status: FreezeStatus;
+  cancel_reason?: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export type ExpenseCategory =
+  | "gaji"
+  | "listrik"
+  | "air"
+  | "sewa"
+  | "perawatan"
+  | "kebersihan"
+  | "marketing"
+  | "lainnya";
+
+export type DiscountType = "percent" | "nominal";
+
+export interface Promotion {
+  id: string;
+  name: string;
+  code: string | null;
+  discount_type: DiscountType;
+  discount_value: number;
+  applies_to: "all" | "package" | "product";
+  target_ids: string[];
+  start_date: string; // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
+  max_quota: number | null;
+  max_per_member: number | null;
+  new_member_only: boolean;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Expense {
+  id: string;
+  category: ExpenseCategory;
+  amount: number;
+  payment_method: PaymentMethod;
+  date: string; // YYYY-MM-DD
+  notes: string | null;
+  receipt_url: string | null;
+  shift_id: string | null;
+  status: "active" | "void";
+  created_by: string | null;
+  created_at: string;
+}
+
+export type ReferralRewardType = "days" | "discount_balance";
+
+export interface Referral {
+  id: string;
+  referrer_member_id: string;
+  referred_member_id: string;
+  transaction_id: string;
+  reward_type: ReferralRewardType;
+  reward_value: number;
+  status: "granted" | "cancelled";
+  created_at: string;
+}
 
 export interface GymSettings {
   id: string;
@@ -24,6 +145,16 @@ export interface GymSettings {
   reminder_days: number;
   reminder_template: string;
   max_cashier_discount: number;
+  freeze_allowed: boolean;
+  freeze_min_days: number;
+  freeze_max_days: number;
+  freeze_max_days_per_period: number;
+  freeze_fee: number;
+  cashier_can_record_expense: boolean;
+  referral_enabled: boolean;
+  referral_discount_amount: number;
+  referral_reward_type: ReferralRewardType;
+  referral_reward_value: number;
   updated_at: string;
 }
 
@@ -73,6 +204,8 @@ export interface Member {
   emergency_contact: string | null;
   notes: string | null;
   portal_token: string;
+  referral_code?: string;
+  discount_balance?: number;
   is_active: boolean;
   last_reminded_at: string | null;
   last_reminded_by: string | null;
@@ -98,11 +231,12 @@ export interface Transaction {
   member_id: string | null;
   guest_name: string | null;
   guest_phone: string | null;
-  package_id: string;
+  package_id: string | null;
   package_price: number;
   registration_fee: number;
   discount: number;
   discount_reason: string | null;
+  promotion_id?: string | null;
   total: number;
   payment_method: PaymentMethod;
   cash_received: number | null;

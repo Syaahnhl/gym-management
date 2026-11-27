@@ -24,7 +24,40 @@ export function readLocalDb(): LocalDbSchema {
   }
 
   const raw = fs.readFileSync(DB_FILE, "utf-8");
-  memoryCache = JSON.parse(raw) as LocalDbSchema;
+  const parsed = JSON.parse(raw) as LocalDbSchema;
+  // Auto-migrasi field baru Fase 2A pada file lokal lama
+  if (!parsed.freezes) parsed.freezes = [];
+  if (!parsed.products) parsed.products = [];
+  if (!parsed.stock_movements) parsed.stock_movements = [];
+  if (!parsed.transaction_items) parsed.transaction_items = [];
+  if (!parsed.expenses) parsed.expenses = [];
+  if (!parsed.promotions) parsed.promotions = [];
+  if (!parsed.referrals) parsed.referrals = [];
+  if (parsed.gym_settings.referral_enabled === undefined) {
+    parsed.gym_settings.referral_enabled = true;
+    parsed.gym_settings.referral_discount_amount = 50000;
+    parsed.gym_settings.referral_reward_type = "days";
+    parsed.gym_settings.referral_reward_value = 7;
+  }
+  for (const m of parsed.members) {
+    if (!m.referral_code) {
+      m.referral_code = `REF-${m.member_code.replace("GYM-", "")}`;
+    }
+    if (m.discount_balance === undefined) {
+      m.discount_balance = 0;
+    }
+  }
+  if (parsed.gym_settings.cashier_can_record_expense === undefined) {
+    parsed.gym_settings.cashier_can_record_expense = true;
+  }
+  if (parsed.gym_settings.freeze_allowed === undefined) {
+    parsed.gym_settings.freeze_allowed = true;
+    parsed.gym_settings.freeze_min_days = 3;
+    parsed.gym_settings.freeze_max_days = 30;
+    parsed.gym_settings.freeze_max_days_per_period = 30;
+    parsed.gym_settings.freeze_fee = 0;
+  }
+  memoryCache = parsed;
   return memoryCache;
 }
 

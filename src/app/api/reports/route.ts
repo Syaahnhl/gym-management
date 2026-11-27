@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
 
   for (const t of filteredTxs) {
     byMethod[t.payment_method] = (byMethod[t.payment_method] || 0) + t.total;
-    const pkgName = pkgMap.get(t.package_id) || "Lainnya";
+    const pkgName = t.package_id ? pkgMap.get(t.package_id) || "Lainnya" : "Produk POS";
     byPackage[pkgName] = (byPackage[pkgName] || 0) + t.total;
     const cashierName = userMap.get(t.cashier_id) || "Staff";
     byCashier[cashierName] = (byCashier[cashierName] || 0) + t.total;

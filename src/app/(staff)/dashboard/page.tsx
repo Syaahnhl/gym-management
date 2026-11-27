@@ -172,6 +172,9 @@ export default async function DashboardPage() {
   const checkinsToday = db.checkins.filter(
     (c) => getJakartaTodayStr(new Date(c.checked_in_at)) === todayStr && !c.is_duplicate
   ).length;
+  const lowStockProducts = (db.products || []).filter(
+    (p) => p.is_active && p.stock <= p.min_stock
+  );
 
   const revenue30Days: { date: string; total: number }[] = [];
   for (let i = 29; i >= 0; i--) {
@@ -290,6 +293,27 @@ export default async function DashboardPage() {
           );
         })}
       </div>
+
+      {lowStockProducts.length > 0 && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-bold text-rose-900">
+                Peringatan Stok Minimum ({lowStockProducts.length} produk)
+              </p>
+              <p className="text-xs text-rose-700">
+                {lowStockProducts.map((p) => `${p.name} (sisa ${p.stock})`).join(", ")}
+              </p>
+            </div>
+            <Link
+              href="/stock"
+              className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+            >
+              Tambah Stok
+            </Link>
+          </div>
+        </div>
+      )}
 
       <DashboardCharts
         revenue30Days={revenue30Days}

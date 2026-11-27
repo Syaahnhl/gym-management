@@ -103,4 +103,24 @@ export const TRANSACTION_TYPE_LABELS: Record<string, string> = {
   registration: "Pendaftaran Member",
   renewal: "Perpanjangan",
   daily: "Tiket Harian",
+  pos: "Penjualan Produk",
+  mixed: "Paket & Produk",
+};
+
+export const PRODUCT_CATEGORY_LABELS: Record<string, string> = {
+  minuman: "Minuman",
+  suplemen: "Suplemen",
+  merchandise: "Merchandise",
+  sewa: "Sewa Handuk/Loker",
+};
+
+export const EXPENSE_CATEGORY_LABELS: Record<string, string> = {
+  gaji: "Gaji Staff",
+  listrik: "Listrik",
+  air: "Air",
+  sewa: "Sewa Tempat",
+  perawatan: "Perawatan Alat",
+  kebersihan: "Kebersihan",
+  marketing: "Marketing",
+  lainnya: "Lainnya",
 };

@@ -5,13 +5,20 @@ import { GYM_TIMEZONE, addDaysToDateStr } from "@/lib/domain/membership";
 import type {
   ActivityLog,
   Checkin,
+  Expense,
+  Freeze,
   GymSettings,
   Member,
   Membership,
   Package,
+  Product,
+  Promotion,
+  Referral,
   Shift,
   StaffUser,
+  StockMovement,
   Transaction,
+  TransactionItem,
 } from "@/types/database";
 
 export interface LocalDbSchema {
@@ -20,7 +27,14 @@ export interface LocalDbSchema {
   packages: Package[];
   members: Member[];
   memberships: Membership[];
+  freezes: Freeze[];
+  products: Product[];
+  stock_movements: StockMovement[];
   transactions: Transaction[];
+  transaction_items: TransactionItem[];
+  expenses: Expense[];
+  promotions: Promotion[];
+  referrals: Referral[];
   checkins: Checkin[];
   shifts: Shift[];
   activity_logs: ActivityLog[];
@@ -222,6 +236,8 @@ export function createInitialSeedData(): LocalDbSchema {
         .update(`gym-${i}`)
         .digest("hex")
         .slice(0, 16)}`,
+      referral_code: `REF-${String(i).padStart(5, "0")}`,
+      discount_balance: 0,
       is_active: isActive,
       last_reminded_at: null,
       last_reminded_by: null,
@@ -285,6 +301,164 @@ export function createInitialSeedData(): LocalDbSchema {
     }
   }
 
+  const freezes: Freeze[] = [
+    {
+      id: "99999999-9999-9999-9999-999999999901",
+      member_id: members[2].id,
+      membership_id: memberships[2].id,
+      start_date: addDaysToDateStr(todayStr, -2),
+      end_date: addDaysToDateStr(todayStr, 5),
+      actual_end_date: null,
+      reason: "dinas",
+      reason_notes: "Tugas luar kota 8 hari",
+      attachment_url: null,
+      fee: 0,
+      status: "active",
+      cancel_reason: null,
+      created_by: kasir1Id,
+      created_at: subDays(now, 2).toISOString(),
+    },
+  ];
+
+  const products: Product[] = [
+    {
+      id: "prod-1",
+      name: "Air Mineral 600ml",
+      category: "minuman",
+      sku: "8991001001",
+      sell_price: 8000,
+      cost_price: 3500,
+      stock: 48,
+      min_stock: 15,
+      is_active: true,
+      created_at: subDays(now, 30).toISOString(),
+    },
+    {
+      id: "prod-2",
+      name: "Minuman Isotonik 500ml",
+      category: "minuman",
+      sku: "8991001002",
+      sell_price: 12000,
+      cost_price: 6500,
+      stock: 24,
+      min_stock: 10,
+      is_active: true,
+      created_at: subDays(now, 30).toISOString(),
+    },
+    {
+      id: "prod-3",
+      name: "Whey Protein Sachet (35g)",
+      category: "suplemen",
+      sku: "8991002001",
+      sell_price: 35000,
+      cost_price: 22000,
+      stock: 4, // Di bawah stok minimum (peringatan dashboard!)
+      min_stock: 10,
+      is_active: true,
+      created_at: subDays(now, 30).toISOString(),
+    },
+    {
+      id: "prod-4",
+      name: "Pre-Workout Shot",
+      category: "suplemen",
+      sku: "8991002002",
+      sell_price: 30000,
+      cost_price: 18000,
+      stock: 15,
+      min_stock: 5,
+      is_active: true,
+      created_at: subDays(now, 30).toISOString(),
+    },
+    {
+      id: "prod-5",
+      name: "Kaos IronPeak Dry-Fit",
+      category: "merchandise",
+      sku: "8991003001",
+      sell_price: 150000,
+      cost_price: 85000,
+      stock: 12,
+      min_stock: 5,
+      is_active: true,
+      created_at: subDays(now, 30).toISOString(),
+    },
+    {
+      id: "prod-6",
+      name: "Sewa Handuk & Loker Harian",
+      category: "sewa",
+      sku: "8991004001",
+      sell_price: 15000,
+      cost_price: 2000,
+      stock: 30,
+      min_stock: 5,
+      is_active: true,
+      created_at: subDays(now, 30).toISOString(),
+    },
+  ];
+
+  const expenses: Expense[] = [
+    {
+      id: "exp-1",
+      category: "listrik",
+      amount: 1500000,
+      payment_method: "transfer",
+      date: todayStr,
+      notes: "Tagihan listrik bulan ini",
+      receipt_url: null,
+      shift_id: null,
+      status: "active",
+      created_by: ownerId,
+      created_at: subDays(now, 1).toISOString(),
+    },
+    {
+      id: "exp-2",
+      category: "kebersihan",
+      amount: 250000,
+      payment_method: "cash",
+      date: todayStr,
+      notes: "Beli cairan disinfektan & lap gym",
+      receipt_url: null,
+      shift_id: closedShiftId,
+      status: "active",
+      created_by: kasir1Id,
+      created_at: subDays(now, 2).toISOString(),
+    },
+  ];
+
+  const promotions: Promotion[] = [
+    {
+      id: "promo-1",
+      name: "Diskon Member Baru 20%",
+      code: "BARU20",
+      discount_type: "percent",
+      discount_value: 20,
+      applies_to: "package",
+      target_ids: [],
+      start_date: addDaysToDateStr(todayStr, -15),
+      end_date: addDaysToDateStr(todayStr, 30),
+      max_quota: 50,
+      max_per_member: 1,
+      new_member_only: true,
+      is_active: true,
+      created_at: subDays(now, 15).toISOString(),
+    },
+    {
+      id: "promo-2",
+      name: "Potongan Rp 50.000 Semua Paket",
+      code: "HEMAT50",
+      discount_type: "nominal",
+      discount_value: 50000,
+      applies_to: "all",
+      target_ids: [],
+      start_date: addDaysToDateStr(todayStr, -10),
+      end_date: addDaysToDateStr(todayStr, 30),
+      max_quota: 100,
+      max_per_member: 2,
+      new_member_only: false,
+      is_active: true,
+      created_at: subDays(now, 10).toISOString(),
+    },
+  ];
+
   return {
     gym_settings: {
       id: "00000000-0000-0000-0000-000000000001",
@@ -296,13 +470,30 @@ export function createInitialSeedData(): LocalDbSchema {
       reminder_template:
         "Halo {nama}, masa aktif membership Anda di {nama_gym} akan berakhir pada {tanggal_habis} ({sisa_hari} hari lagi). Yuk segera perpanjang agar latihan tetap lancar!",
       max_cashier_discount: 50000,
+      freeze_allowed: true,
+      freeze_min_days: 3,
+      freeze_max_days: 30,
+      freeze_max_days_per_period: 30,
+      freeze_fee: 0,
+      cashier_can_record_expense: true,
+      referral_enabled: true,
+      referral_discount_amount: 50000,
+      referral_reward_type: "days",
+      referral_reward_value: 7,
       updated_at: now.toISOString(),
     },
     users,
     packages,
     members,
     memberships,
+    freezes,
+    products,
+    stock_movements: [],
     transactions,
+    transaction_items: [],
+    expenses,
+    promotions,
+    referrals: [],
     checkins,
     shifts,
     activity_logs: [

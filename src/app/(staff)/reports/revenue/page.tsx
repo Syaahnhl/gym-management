@@ -25,7 +25,7 @@ export default async function RevenueReportPage() {
       customer: t.member_id
         ? memberMap.get(t.member_id) || "-"
         : t.guest_name || "Walk-in",
-      package_name: pkgMap.get(t.package_id) || "-",
+      package_name: t.package_id ? pkgMap.get(t.package_id) || "Produk POS" : "Produk POS",
       payment_method: t.payment_method,
       cashier_name: userMap.get(t.cashier_id) || "-",
       total: t.total,

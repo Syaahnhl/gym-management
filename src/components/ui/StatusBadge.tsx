@@ -6,6 +6,7 @@ const STYLES: Record<ComputedMemberStatus, string> = {
   expiring: "bg-amber-100 text-amber-800 border-amber-200",
   expired: "bg-rose-100 text-rose-800 border-rose-200",
   not_started: "bg-sky-100 text-sky-800 border-sky-200",
+  frozen: "bg-cyan-100 text-cyan-800 border-cyan-200",
   inactive: "bg-slate-200 text-slate-700 border-slate-300",
 };
 

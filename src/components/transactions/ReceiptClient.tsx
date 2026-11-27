@@ -10,6 +10,7 @@ import type {
   Package,
   StaffRole,
   Transaction,
+  TransactionItem,
 } from "@/types/database";
 import {
   PAYMENT_METHOD_LABELS,
@@ -24,6 +25,7 @@ export function ReceiptClient({
   transaction,
   member,
   pkg,
+  items = [],
   membership,
   cashierName,
   settings,
@@ -32,6 +34,7 @@ export function ReceiptClient({
   transaction: Transaction;
   member: Member | null;
   pkg: Package | null;
+  items?: TransactionItem[];
   membership: Membership | null;
   cashierName: string;
   settings: GymSettings;
@@ -172,10 +175,21 @@ export function ReceiptClient({
         </div>
 
         <div className="space-y-1 border-b border-dashed border-slate-300 py-3">
-          <div className="flex justify-between">
-            <span>{pkg?.name || "Paket"}</span>
-            <span>{formatRupiah(transaction.package_price)}</span>
-          </div>
+          {items.length > 0 ? (
+            items.map((it) => (
+              <div key={it.id} className="flex justify-between">
+                <span>
+                  {it.name} {it.qty > 1 ? `x${it.qty}` : ""}
+                </span>
+                <span>{formatRupiah(it.subtotal)}</span>
+              </div>
+            ))
+          ) : (
+            <div className="flex justify-between">
+              <span>{pkg?.name || "Paket"}</span>
+              <span>{formatRupiah(transaction.package_price)}</span>
+            </div>
+          )}
           {transaction.registration_fee > 0 && (
             <div className="flex justify-between">
               <span>Biaya Daftar</span>

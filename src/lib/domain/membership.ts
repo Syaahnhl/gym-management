@@ -2,6 +2,7 @@ import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import type {
   ComputedMemberStatus,
+  Freeze,
   Member,
   MemberStatusInfo,
   Membership,
@@ -104,18 +105,43 @@ export const STATUS_LABELS: Record<ComputedMemberStatus, string> = {
   expiring: "Akan Habis",
   expired: "Habis",
   not_started: "Belum Mulai",
+  frozen: "Freeze",
   inactive: "Nonaktif",
 };
 
 /**
- * Menghitung status member secara dinamis dari daftar memberships (FR-29, FR-30).
- * Status member tidak disimpan di kolom database agar selalu konsisten (termasuk setelah void).
+ * Menghitung jumlah hari freeze inklusif (start_date s/d end_date).
+ */
+export function calculateFreezeDays(startDate: string, endDate: string): number {
+  const diff = differenceInCalendarDays(
+    parseDateOnly(endDate),
+    parseDateOnly(startDate)
+  );
+  return diff >= 0 ? diff + 1 : 0;
+}
+
+/**
+ * Menghitung hari freeze yang efektif menambah masa aktif membership.
+ */
+export function computeEffectiveFreezeDays(
+  freeze: Pick<Freeze, "start_date" | "end_date" | "actual_end_date" | "status">
+): number {
+  if (freeze.status === "cancelled") return 0;
+  if (freeze.status === "finished" && freeze.actual_end_date) {
+    return calculateFreezeDays(freeze.start_date, freeze.actual_end_date);
+  }
+  return calculateFreezeDays(freeze.start_date, freeze.end_date);
+}
+
+/**
+ * Menghitung status member secara dinamis dari daftar memberships & freezes (FR-29, FR-30, Fase 2A).
  */
 export function computeMemberStatus(
   member: Pick<Member, "is_active">,
   memberships: Pick<Membership, "start_date" | "end_date" | "status">[],
   reminderDays: number = 7,
-  todayStr: string = getJakartaTodayStr()
+  todayStr: string = getJakartaTodayStr(),
+  freezes: Pick<Freeze, "start_date" | "end_date" | "actual_end_date" | "status">[] = []
 ): MemberStatusInfo {
   if (!member.is_active) {
     return {
@@ -147,9 +173,38 @@ export function computeMemberStatus(
     if (m.start_date < minStartDate) minStartDate = m.start_date;
   }
 
+  // Tambahkan total hari freeze efektif ke tanggal habis membership
+  const totalFreezeDays = freezes.reduce(
+    (sum, f) => sum + computeEffectiveFreezeDays(f),
+    0
+  );
+  const effectiveEndDate =
+    totalFreezeDays > 0
+      ? addDaysToDateStr(maxEndDate, totalFreezeDays)
+      : maxEndDate;
+
   const today = parseDateOnly(todayStr);
   const start = parseDateOnly(minStartDate);
-  const end = parseDateOnly(maxEndDate);
+  const end = parseDateOnly(effectiveEndDate);
+
+  // Cek apakah member sedang dalam periode freeze aktif hari ini
+  const activeFreeze = freezes.find(
+    (f) =>
+      f.status === "active" &&
+      f.start_date <= todayStr &&
+      f.end_date >= todayStr
+  );
+  if (activeFreeze) {
+    const remainingDays = differenceInCalendarDays(end, today);
+    return {
+      status: "frozen",
+      label: STATUS_LABELS.frozen,
+      start_date: minStartDate,
+      end_date: effectiveEndDate,
+      remaining_days: remainingDays,
+      can_checkin: false,
+    };
+  }
 
   // Jika semua membership aktif dimulai di masa depan
   if (start > today) {
@@ -158,7 +213,7 @@ export function computeMemberStatus(
       status: "not_started",
       label: STATUS_LABELS.not_started,
       start_date: minStartDate,
-      end_date: maxEndDate,
+      end_date: effectiveEndDate,
       remaining_days: remainingDays,
       can_checkin: false,
     };
@@ -171,7 +226,7 @@ export function computeMemberStatus(
       status: "expired",
       label: STATUS_LABELS.expired,
       start_date: minStartDate,
-      end_date: maxEndDate,
+      end_date: effectiveEndDate,
       remaining_days: remainingDays,
       can_checkin: false,
     };
@@ -182,7 +237,7 @@ export function computeMemberStatus(
       status: "expiring",
       label: STATUS_LABELS.expiring,
       start_date: minStartDate,
-      end_date: maxEndDate,
+      end_date: effectiveEndDate,
       remaining_days: remainingDays,
       can_checkin: true,
     };
@@ -192,7 +247,7 @@ export function computeMemberStatus(
     status: "active",
     label: STATUS_LABELS.active,
     start_date: minStartDate,
-    end_date: maxEndDate,
+    end_date: effectiveEndDate,
     remaining_days: remainingDays,
     can_checkin: true,
   };

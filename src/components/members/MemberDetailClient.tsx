@@ -7,6 +7,7 @@ import { ExternalLink, MessageCircle } from "lucide-react";
 import type {
   Checkin,
   Membership,
+  Referral,
   StaffRole,
   Transaction,
 } from "@/types/database";
@@ -25,6 +26,7 @@ export function MemberDetailClient({
   memberships,
   transactions,
   checkins,
+  referrals = [],
   staffRole,
   gymName,
 }: {
@@ -32,6 +34,7 @@ export function MemberDetailClient({
   memberships: Membership[];
   transactions: Transaction[];
   checkins: Checkin[];
+  referrals?: (Referral & { referred_name: string })[];
   staffRole: StaffRole;
   gymName: string;
 }) {
@@ -103,12 +106,20 @@ export function MemberDetailClient({
 
         <div className="flex flex-wrap gap-2">
           {member.is_active && (
-            <Link
-              href={`/renew/${member.id}`}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-            >
-              Perpanjang Paket
-            </Link>
+            <>
+              <Link
+                href={`/renew/${member.id}`}
+                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+              >
+                Perpanjang Paket
+              </Link>
+              <Link
+                href="/freezes"
+                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700"
+              >
+                Freeze
+              </Link>
+            </>
           )}
           <a
             href={buildWhatsAppUrl(member.phone, waPortalMsg)}
@@ -250,6 +261,13 @@ export function MemberDetailClient({
                 </dd>
               </div>
               <div className="sm:col-span-2">
+                <dt className="text-xs text-slate-500">Kode Referral & Saldo Bonus</dt>
+                <dd className="font-mono font-semibold text-emerald-700">
+                  {member.referral_code || "-"} · Saldo Diskon:{" "}
+                  {formatRupiah(member.discount_balance || 0)}
+                </dd>
+              </div>
+              <div className="sm:col-span-2">
                 <dt className="text-xs text-slate-500">Catatan</dt>
                 <dd className="font-medium text-slate-900">
                   {member.notes || "-"}
@@ -323,6 +341,38 @@ export function MemberDetailClient({
           </div>
         </div>
       </div>
+
+      {referrals.length > 0 && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-bold text-slate-900">
+            Riwayat Referral ({referrals.length})
+          </h2>
+          <div className="mt-3 space-y-2 text-sm">
+            {referrals.map((r) => (
+              <div
+                key={r.id}
+                className="flex items-center justify-between rounded-xl border border-slate-100 p-3"
+              >
+                <div>
+                  <span className="font-medium">{r.referred_name}</span>
+                  <span className="ml-2 text-xs text-slate-500">
+                    ({r.reward_type === "days" ? `+${r.reward_value} hari` : formatRupiah(r.reward_value)})
+                  </span>
+                </div>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    r.status === "granted"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-rose-100 text-rose-800"
+                  }`}
+                >
+                  {r.status === "granted" ? "Diberikan" : "Dibatalkan"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

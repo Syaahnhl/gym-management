@@ -115,6 +115,42 @@ describe("Logika Masa Aktif & Status Membership (Section 6.6 & 13)", () => {
     expect(inactive.status).toBe("inactive");
     expect(inactive.can_checkin).toBe(false);
   });
+  it("Kriteria 1 (Fase 2A): Freeze 10 hari menambah tanggal habis tepat 10 hari dan menolak check-in selama freeze", () => {
+    const memberships = [
+      { start_date: "2026-11-27", end_date: "2026-12-26", status: "active" as const },
+    ];
+    const freezes = [
+      {
+        start_date: "2026-11-27",
+        end_date: "2026-12-06", // 10 hari inklusif
+        actual_end_date: null,
+        status: "active" as const,
+      },
+    ];
+    const status = computeMemberStatus({ is_active: true }, memberships, 7, today, freezes);
+    expect(status.status).toBe("frozen");
+    expect(status.can_checkin).toBe(false);
+    expect(status.end_date).toBe("2027-01-05"); // 2026-12-26 + 10 hari
+  });
+
+  it("Kriteria 2 (Fase 2A): Mengakhiri freeze lebih awal mengembalikan sisa hari yang tidak terpakai", () => {
+    const memberships = [
+      { start_date: "2026-11-27", end_date: "2026-12-26", status: "active" as const },
+    ];
+    // Rencana 10 hari (27 Nov - 6 Des), diakhiri lebih awal pada 1 Des (terpakai 5 hari)
+    const freezes = [
+      {
+        start_date: "2026-11-27",
+        end_date: "2026-12-06",
+        actual_end_date: "2026-12-01",
+        status: "finished" as const,
+      },
+    ];
+    const status = computeMemberStatus({ is_active: true }, memberships, 7, "2026-12-02", freezes);
+    expect(status.status).toBe("active");
+    expect(status.can_checkin).toBe(true);
+    expect(status.end_date).toBe("2026-12-31"); // 2026-12-26 + 5 hari
+  });
 });
 
 describe("Format Rupiah, Kode, Invoice & WhatsApp", () => {

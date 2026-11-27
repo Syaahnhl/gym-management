@@ -22,7 +22,12 @@ export default async function TransactionDetailPage({
   const member = tx.member_id
     ? db.members.find((m) => m.id === tx.member_id) || null
     : null;
-  const pkg = db.packages.find((p) => p.id === tx.package_id) || null;
+  const pkg = tx.package_id
+    ? db.packages.find((p) => p.id === tx.package_id) || null
+    : null;
+  const items = (db.transaction_items || []).filter(
+    (it) => it.transaction_id === tx.id
+  );
   const membership = db.memberships.find((m) => m.transaction_id === tx.id) || null;
   const cashier = db.users.find((u) => u.id === tx.cashier_id) || null;
 
@@ -31,6 +36,7 @@ export default async function TransactionDetailPage({
       transaction={tx}
       member={member}
       pkg={pkg}
+      items={items}
       membership={membership}
       cashierName={cashier?.name || "-"}
       settings={db.gym_settings}

@@ -20,6 +20,34 @@ export function SettingsClient({
   const [maxDiscount, setMaxDiscount] = useState(
     initialSettings.max_cashier_discount
   );
+  const [freezeAllowed, setFreezeAllowed] = useState(
+    initialSettings.freeze_allowed
+  );
+  const [freezeMinDays, setFreezeMinDays] = useState(
+    initialSettings.freeze_min_days
+  );
+  const [freezeMaxDays, setFreezeMaxDays] = useState(
+    initialSettings.freeze_max_days
+  );
+  const [freezeMaxPerPeriod, setFreezeMaxPerPeriod] = useState(
+    initialSettings.freeze_max_days_per_period
+  );
+  const [freezeFee, setFreezeFee] = useState(initialSettings.freeze_fee);
+  const [cashierCanExpense, setCashierCanExpense] = useState(
+    initialSettings.cashier_can_record_expense
+  );
+  const [referralEnabled, setReferralEnabled] = useState(
+    initialSettings.referral_enabled
+  );
+  const [referralDiscount, setReferralDiscount] = useState(
+    initialSettings.referral_discount_amount
+  );
+  const [referralRewardType, setReferralRewardType] = useState(
+    initialSettings.referral_reward_type
+  );
+  const [referralRewardValue, setReferralRewardValue] = useState(
+    initialSettings.referral_reward_value
+  );
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +65,16 @@ export function SettingsClient({
         reminder_days: Number(reminderDays),
         reminder_template: reminderTemplate,
         max_cashier_discount: Number(maxDiscount),
+        freeze_allowed: freezeAllowed,
+        freeze_min_days: Number(freezeMinDays),
+        freeze_max_days: Number(freezeMaxDays),
+        freeze_max_days_per_period: Number(freezeMaxPerPeriod),
+        freeze_fee: Number(freezeFee),
+        cashier_can_record_expense: cashierCanExpense,
+        referral_enabled: referralEnabled,
+        referral_discount_amount: Number(referralDiscount),
+        referral_reward_type: referralRewardType,
+        referral_reward_value: Number(referralRewardValue),
       }),
     });
     const data = await res.json();
@@ -133,6 +171,138 @@ export function SettingsClient({
             <code>{"{tanggal_habis}"}</code>, <code>{"{sisa_hari}"}</code>,{" "}
             <code>{"{nama_gym}"}</code>
           </p>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4 space-y-3">
+          <h2 className="text-sm font-bold text-slate-900">
+            Pengaturan Freeze / Cuti Membership
+          </h2>
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={freezeAllowed}
+              onChange={(e) => setFreezeAllowed(e.target.checked)}
+              className="rounded border-slate-300"
+            />
+            Izinkan pengajuan freeze membership
+          </label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Min. Hari per Pengajuan
+              </label>
+              <input
+                type="number"
+                min={1}
+                value={freezeMinDays}
+                onChange={(e) => setFreezeMinDays(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Maks. Hari per Pengajuan
+              </label>
+              <input
+                type="number"
+                min={1}
+                value={freezeMaxDays}
+                onChange={(e) => setFreezeMaxDays(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Maks. Total Hari per Periode
+              </label>
+              <input
+                type="number"
+                min={1}
+                value={freezeMaxPerPeriod}
+                onChange={(e) => setFreezeMaxPerPeriod(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Biaya Freeze (Rp)
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={freezeFee}
+                onChange={(e) => setFreezeFee(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+          <label className="flex items-center gap-2 pt-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={cashierCanExpense}
+              onChange={(e) => setCashierCanExpense(e.target.checked)}
+              className="rounded border-slate-300"
+            />
+            Izinkan kasir mencatat pengeluaran operasional
+          </label>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4 space-y-3">
+          <h2 className="text-sm font-bold text-slate-900">
+            Pengaturan Program Referral
+          </h2>
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={referralEnabled}
+              onChange={(e) => setReferralEnabled(e.target.checked)}
+              className="rounded border-slate-300"
+            />
+            Aktifkan program referral member
+          </label>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Diskon Member Baru (Rp)
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={referralDiscount}
+                onChange={(e) => setReferralDiscount(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Tipe Bonus Pengajak
+              </label>
+              <select
+                value={referralRewardType}
+                onChange={(e) =>
+                  setReferralRewardType(
+                    e.target.value as "days" | "discount_balance"
+                  )
+                }
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="days">Tambahan Hari Aktif</option>
+                <option value="discount_balance">Saldo Diskon (Rp)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700">
+                Nilai Bonus ({referralRewardType === "days" ? "Hari" : "Rp"})
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={referralRewardValue}
+                onChange={(e) => setReferralRewardValue(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
         </div>
 
         {error && <p className="text-sm text-rose-600">{error}</p>}

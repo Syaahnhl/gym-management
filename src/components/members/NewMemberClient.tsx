@@ -33,6 +33,9 @@ export function NewMemberClient({
   const [startDate, setStartDate] = useState(todayStr);
   const [discount, setDiscount] = useState(0);
   const [discountReason, setDiscountReason] = useState("");
+  const [promoCode, setPromoCode] = useState("");
+  const [promoMsg, setPromoMsg] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashReceived, setCashReceived] = useState(0);
 
@@ -74,6 +77,8 @@ export function NewMemberClient({
           startDate,
           discount: Number(discount || 0),
           discountReason: discountReason || undefined,
+          promoCode: promoCode.trim() || undefined,
+          referralCode: referralCode.trim() || undefined,
           paymentMethod,
           cashReceived:
             paymentMethod === "cash" ? Number(cashReceived || 0) : undefined,
@@ -245,6 +250,60 @@ export function NewMemberClient({
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700">
+              Kode Promo / Voucher (Opsional)
+            </label>
+            <div className="mt-1 flex gap-2">
+              <input
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                placeholder="Contoh: BARU20"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono"
+              />
+              <button
+                type="button"
+                onClick={async () => {
+                  setPromoMsg(null);
+                  const res = await fetch("/api/promotions/validate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      promoCode,
+                      isNewMember: true,
+                      packageId,
+                      subtotal,
+                    }),
+                  });
+                  const d = await res.json();
+                  if (!res.ok) {
+                    setPromoMsg(d.error || "Kode tidak berlaku");
+                    return;
+                  }
+                  setDiscount(d.discountAmount);
+                  setDiscountReason(`Promo: ${d.promotion.name}`);
+                  setPromoMsg(`Promo "${d.promotion.name}" diterapkan (-${formatRupiah(d.discountAmount)})`);
+                }}
+                className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold hover:bg-slate-50"
+              >
+                Cek
+              </button>
+            </div>
+            {promoMsg && <p className="mt-1 text-xs text-emerald-700">{promoMsg}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700">
+              Kode Referral Member (Opsional)
+            </label>
+            <input
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+              placeholder="Contoh: REF-00001"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono"
             />
           </div>
 

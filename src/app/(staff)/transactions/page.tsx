@@ -65,7 +65,7 @@ export default async function TransactionsPage() {
                   <td className="px-4 py-3 text-slate-600">
                     <div>{TRANSACTION_TYPE_LABELS[t.type]}</div>
                     <div className="text-xs text-slate-400">
-                      {pkgMap.get(t.package_id) || "-"}
+                      {t.package_id ? pkgMap.get(t.package_id) || "-" : "Produk POS"}
                     </div>
                   </td>
                   <td className="px-4 py-3">

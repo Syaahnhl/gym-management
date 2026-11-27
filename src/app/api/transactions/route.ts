@@ -4,6 +4,7 @@ import { requireApiStaff } from "@/lib/auth/session";
 import { readLocalDb } from "@/lib/db/local-store";
 import {
   processDailyTicketTransaction,
+  processPosTransaction,
   processRegistrationTransaction,
   processRenewalTransaction,
 } from "@/lib/db/service";
@@ -26,6 +27,9 @@ const registrationSchema = z.object({
   startDate: z.string().optional(),
   discount: z.number().int().min(0).default(0),
   discountReason: z.string().optional(),
+  promotionId: z.string().nullable().optional(),
+  promoCode: z.string().nullable().optional(),
+  referralCode: z.string().nullable().optional(),
   paymentMethod: z.enum(["cash", "qris", "transfer", "card"]),
   cashReceived: z.number().int().min(0).optional(),
   notes: z.string().optional(),
@@ -37,6 +41,9 @@ const renewalSchema = z.object({
   packageId: z.string().min(1),
   discount: z.number().int().min(0).default(0),
   discountReason: z.string().optional(),
+  promotionId: z.string().nullable().optional(),
+  promoCode: z.string().nullable().optional(),
+  referralCode: z.string().nullable().optional(),
   paymentMethod: z.enum(["cash", "qris", "transfer", "card"]),
   cashReceived: z.number().int().min(0).optional(),
   notes: z.string().optional(),
@@ -49,6 +56,33 @@ const dailySchema = z.object({
   packageId: z.string().min(1),
   discount: z.number().int().min(0).default(0),
   discountReason: z.string().optional(),
+  promotionId: z.string().nullable().optional(),
+  promoCode: z.string().nullable().optional(),
+  referralCode: z.string().nullable().optional(),
+  paymentMethod: z.enum(["cash", "qris", "transfer", "card"]),
+  cashReceived: z.number().int().min(0).optional(),
+  notes: z.string().optional(),
+});
+
+const posSchema = z.object({
+  type: z.literal("pos"),
+  memberId: z.string().nullable().optional(),
+  guestName: z.string().nullable().optional(),
+  guestPhone: z.string().nullable().optional(),
+  items: z
+    .array(
+      z.object({
+        productId: z.string().min(1),
+        qty: z.number().int().min(1),
+      })
+    )
+    .default([]),
+  packageId: z.string().nullable().optional(),
+  discount: z.number().int().min(0).default(0),
+  discountReason: z.string().optional(),
+  promotionId: z.string().nullable().optional(),
+  promoCode: z.string().nullable().optional(),
+  referralCode: z.string().nullable().optional(),
   paymentMethod: z.enum(["cash", "qris", "transfer", "card"]),
   cashReceived: z.number().int().min(0).optional(),
   notes: z.string().optional(),
@@ -58,6 +92,7 @@ const txUnionSchema = z.discriminatedUnion("type", [
   registrationSchema,
   renewalSchema,
   dailySchema,
+  posSchema,
 ]);
 
 export async function GET() {
@@ -83,7 +118,7 @@ export async function GET() {
         ? memberMap.get(t.member_id)?.full_name || "-"
         : t.guest_name || "Walk-in",
       member_code: t.member_id ? memberMap.get(t.member_id)?.member_code || null : null,
-      package_name: pkgMap.get(t.package_id)?.name || "-",
+      package_name: t.package_id ? pkgMap.get(t.package_id) || "-" : "Produk POS",
       cashier_name: userMap.get(t.cashier_id) || "-",
     }));
 
@@ -121,7 +156,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(result, { status: 201 });
     }
 
-    const result = processDailyTicketTransaction(auth.staff, data);
+    if (data.type === "daily") {
+      const result = processDailyTicketTransaction(auth.staff, data);
+      return NextResponse.json(result, { status: 201 });
+    }
+
+    const result = processPosTransaction(auth.staff, data);
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
     const existingMember =

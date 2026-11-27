@@ -28,6 +28,13 @@ export default async function MemberPortalPage({
   const checkins = db.checkins
     .filter((c) => c.member_id === member.id)
     .sort((a, b) => b.checked_in_at.localeCompare(a.checked_in_at));
+  const memberMap = new Map(db.members.map((m) => [m.id, m.full_name]));
+  const referrals = (db.referrals || [])
+    .filter((r) => r.referrer_member_id === member.id)
+    .map((r) => ({
+      ...r,
+      referred_name: memberMap.get(r.referred_member_id) || "-",
+    }));
 
   return (
     <div className="min-h-screen bg-slate-900 px-4 py-8 text-slate-900">
@@ -68,6 +75,12 @@ export default async function MemberPortalPage({
                 member.status_info.remaining_days >= 0
                   ? `${member.status_info.remaining_days} hari`
                   : "Habis"}
+              </p>
+            </div>
+            <div className="col-span-2 border-t border-slate-200 pt-2">
+              <p className="text-xs text-slate-500">Kode Referral Anda</p>
+              <p className="font-mono font-bold text-emerald-700">
+                {member.referral_code || "-"}
               </p>
             </div>
           </div>
@@ -120,6 +133,34 @@ export default async function MemberPortalPage({
             ))}
             {checkins.length === 0 && (
               <p className="text-slate-500">Belum ada riwayat check-in.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-3xl bg-white p-5 shadow-lg">
+          <h2 className="text-sm font-bold text-slate-900">
+            Riwayat Referral ({referrals.length})
+          </h2>
+          <div className="mt-3 space-y-2 text-xs">
+            {referrals.map((r) => (
+              <div
+                key={r.id}
+                className="flex items-center justify-between rounded-xl bg-slate-50 p-3"
+              >
+                <span className="font-medium">{r.referred_name}</span>
+                <span className="font-semibold text-emerald-700">
+                  {r.status === "granted"
+                    ? r.reward_type === "days"
+                      ? `+${r.reward_value} hari`
+                      : formatRupiah(r.reward_value)
+                    : "Dibatalkan"}
+                </span>
+              </div>
+            ))}
+            {referrals.length === 0 && (
+              <p className="text-slate-500">
+                Bagikan kode {member.referral_code} ke teman Anda!
+              </p>
             )}
           </div>
         </div>

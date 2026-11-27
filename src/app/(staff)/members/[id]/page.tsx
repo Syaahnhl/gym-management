@@ -26,6 +26,13 @@ export default async function MemberDetailPage({
   const checkins = db.checkins
     .filter((c) => c.member_id === id)
     .sort((a, b) => b.checked_in_at.localeCompare(a.checked_in_at));
+  const memberMap = new Map(db.members.map((m) => [m.id, m.full_name]));
+  const referrals = (db.referrals || [])
+    .filter((r) => r.referrer_member_id === id)
+    .map((r) => ({
+      ...r,
+      referred_name: memberMap.get(r.referred_member_id) || "-",
+    }));
   const settings = getGymSettings();
 
   return (
@@ -34,6 +41,7 @@ export default async function MemberDetailPage({
       memberships={memberships}
       transactions={transactions}
       checkins={checkins}
+      referrals={referrals}
       staffRole={staff.role}
       gymName={settings.name}
     />

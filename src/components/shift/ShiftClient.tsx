@@ -15,6 +15,7 @@ interface ShiftSummaryData {
   transaction_count: number;
   total_revenue: number;
   by_method: Record<PaymentMethod, { count: number; total: number }>;
+  cash_expenses_total?: number;
   expected_cash: number;
 }
 
@@ -164,6 +165,14 @@ export function ShiftClient({
                       </span>
                     </div>
                   )
+                )}
+                {(openSummary.cash_expenses_total ?? 0) > 0 && (
+                  <div className="flex justify-between text-rose-600">
+                    <span>Pengeluaran Tunai Shift</span>
+                    <span className="font-semibold">
+                      -{formatRupiah(openSummary.cash_expenses_total ?? 0)}
+                    </span>
+                  </div>
                 )}
                 <div className="flex justify-between border-t border-slate-200 pt-2 font-bold text-slate-900">
                   <span>Kas Tunai Seharusnya</span>

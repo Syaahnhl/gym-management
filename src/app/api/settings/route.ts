@@ -11,6 +11,16 @@ const updateSchema = z.object({
   reminder_days: z.number().int().min(1).max(60).optional(),
   reminder_template: z.string().min(10).optional(),
   max_cashier_discount: z.number().int().min(0).optional(),
+  freeze_allowed: z.boolean().optional(),
+  freeze_min_days: z.number().int().min(1).optional(),
+  freeze_max_days: z.number().int().min(1).optional(),
+  freeze_max_days_per_period: z.number().int().min(1).optional(),
+  freeze_fee: z.number().int().min(0).optional(),
+  cashier_can_record_expense: z.boolean().optional(),
+  referral_enabled: z.boolean().optional(),
+  referral_discount_amount: z.number().int().min(0).optional(),
+  referral_reward_type: z.enum(["days", "discount_balance"]).optional(),
+  referral_reward_value: z.number().int().min(0).optional(),
 });
 
 export async function GET() {
