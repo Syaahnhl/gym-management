@@ -2,11 +2,11 @@ import Link from "next/link";
 import {
   ArrowRight,
   BarChart3,
+  Building2,
   CalendarDays,
   CheckCircle2,
   CreditCard,
   Dumbbell,
-  MapPin,
   MessageCircle,
   PauseCircle,
   QrCode,
@@ -16,56 +16,112 @@ import {
   Users,
 } from "lucide-react";
 import { getCurrentStaff } from "@/lib/auth/session";
-import { getGymSettings, listPackages, listPromotions } from "@/lib/db/service";
-import { listClasses, listTrainers } from "@/lib/db/phase2b-service";
-import { buildWhatsAppUrl, formatDateId, formatRupiah } from "@/lib/domain/format";
+import { buildWhatsAppUrl, formatRupiah } from "@/lib/domain/format";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomeProfilePage() {
+const SAAS_PLANS = [
+  {
+    name: "Starter",
+    badge: "Gym Pemula",
+    monthlyPrice: 149000,
+    desc: "Cocok untuk gym skala kecil yang ingin beralih dari pencatatan buku & Excel.",
+    popular: false,
+    features: [
+      "1 Lokasi / Cabang",
+      "1 Akun Owner + 2 Kasir",
+      "Hingga 500 Member Aktif",
+      "Presensi QR Code & ID Manual",
+      "Shift Kasir & Rekap Kas Harian",
+      "Pengingat WhatsApp (wa.me)",
+      "Portal Member Pribadi",
+    ],
+  },
+  {
+    name: "Pro",
+    badge: "Terpopuler",
+    monthlyPrice: 299000,
+    desc: "Solusi lengkap untuk gym berkembang dengan kontrol keuangan & stok penuh.",
+    popular: true,
+    features: [
+      "1 Lokasi / Cabang",
+      "1 Akun Owner + 5 Kasir",
+      "Hingga 2.000 Member Aktif",
+      "Semua fitur Starter",
+      "POS Produk, Barcode & Manajemen Stok",
+      "Freeze / Cuti, Promo Voucher & Referral",
+      "Personal Trainer, Kelas & Komisi",
+      "Laporan Laba Rugi & Ekspor Excel/CSV",
+      "Perpanjangan Mandiri QRIS (Payment Gateway)",
+    ],
+  },
+  {
+    name: "Enterprise",
+    badge: "Multi-Cabang",
+    monthlyPrice: 599000,
+    desc: "Untuk jaringan gym & studio fitness dengan banyak cabang dan otomasi penuh.",
+    popular: false,
+    features: [
+      "Multi-Cabang Tak Terbatas",
+      "Akun Kasir & Member Unlimited",
+      "Semua fitur Pro",
+      "WhatsApp API Otomatis (Fonnte/Wablas)",
+      "Integrasi Turnstile / Pintu Otomatis",
+      "Laporan Konsolidasi Laba Rugi per Cabang",
+      "Prioritas Support & Onboarding Tim",
+    ],
+  },
+];
+
+export default async function GymMateLandingPage() {
   const staff = await getCurrentStaff();
-  const settings = getGymSettings();
-  const packages = listPackages(true);
-  const trainers = listTrainers(true);
-  const classes = listClasses().slice(0, 4);
-  const promos = listPromotions(true).slice(0, 2);
 
   const features = [
     {
       icon: QrCode,
       title: "Presensi QR Code & ID Manual",
-      desc: "Check-in super cepat kurang dari 5 detik dengan scan QR atau input ID member singkat jika QR tidak terbaca.",
+      desc: "Check-in member selesai < 5 detik lewat kamera/scanner USB, atau input ID Member singkat jika QR tidak terbaca.",
     },
     {
-      icon: Users,
-      title: "Portal Member Mandiri",
-      desc: "Setiap member punya link portal pribadi untuk lihat QR Code, sisa masa aktif, riwayat latihan, hingga perpanjangan mandiri QRIS.",
-    },
-    {
-      icon: PauseCircle,
-      title: "Freeze / Cuti Membership",
-      desc: "Ajukan cuti saat sakit atau dinas luar kota. Masa aktif otomatis bertambah dan sisa hari kembali jika diakhiri lebih awal.",
-    },
-    {
-      icon: Dumbbell,
-      title: "Personal Trainer & Jadwal Kelas",
-      desc: "Booking kelas grup (HIIT, Zumba, Yoga) dengan kuota otomatis serta jadwal sesi PT lengkap dengan perhitungan komisi.",
+      icon: ShieldCheck,
+      title: "Shift Kasir Anti Selisih",
+      desc: "Setiap transaksi & pengeluaran tunai tercatat ke shift kasir. Selisih kas langsung terlacak saat tutup shift.",
     },
     {
       icon: ShoppingBag,
-      title: "POS Minuman, Suplemen & Stok",
-      desc: "Kasir POS terintegrasi barcode scanner untuk penjualan minuman, suplemen, merchandise, dan sewa handuk/loker.",
+      title: "POS Produk & Kontrol Stok",
+      desc: "Jual minuman, suplemen, merchandise & sewa handuk dengan barcode scanner, lengkap dengan HPP dan stok minimum.",
     },
     {
       icon: BarChart3,
-      title: "Shift Kasir, Laba Rugi & Pengingat WA",
-      desc: "Rekap kas per shift anti selisih, laporan laba rugi otomatis, promo voucher, referral, dan pengingat masa aktif via WhatsApp.",
+      title: "Laporan Laba Rugi Otomatis",
+      desc: "Pantau pendapatan membership, tiket harian, produk POS, dikurangi modal produk & pengeluaran secara real-time.",
+    },
+    {
+      icon: PauseCircle,
+      title: "Freeze, Promo & Referral",
+      desc: "Kelola cuti membership otomatis, buat kode voucher berkuota, dan jalankan program referral member ajak teman.",
+    },
+    {
+      icon: CalendarDays,
+      title: "Personal Trainer, Kelas & Komisi",
+      desc: "Atur jadwal kelas grup berkuota, sesi PT, dan hitung komisi trainer otomatis tanpa rekap manual.",
+    },
+    {
+      icon: Users,
+      title: "Portal Member & QRIS Mandiri",
+      desc: "Member bisa cek QR Code, sisa masa aktif, dan perpanjang paket mandiri dari HP tanpa antre di kasir.",
+    },
+    {
+      icon: Building2,
+      title: "Multi-Cabang & Turnstile",
+      desc: "Kelola banyak cabang dalam satu dashboard owner serta integrasi webhook pintu otomatis saat check-in berhasil.",
     },
   ];
 
-  const waGeneralUrl = buildWhatsAppUrl(
-    settings.whatsapp_number || "081299998888",
-    `Halo ${settings.name}, saya ingin bertanya tentang pendaftaran membership gym.`
+  const waSalesUrl = buildWhatsAppUrl(
+    "081299998888",
+    "Halo tim Gym Mate, saya pemilik gym dan ingin konsultasi langganan platform Gym Mate."
   );
 
   return (
@@ -78,27 +134,24 @@ export default async function HomeProfilePage() {
               <Dumbbell className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-bold leading-tight text-white">
-                {settings.name}
+              <p className="text-base font-extrabold leading-tight text-white">
+                Gym Mate
               </p>
               <p className="text-[11px] text-slate-400">
-                Modern Fitness & Gym Management
+                Platform Manajemen Gym & Fitness
               </p>
             </div>
           </div>
 
           <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+            <a href="#masalah" className="hover:text-white">
+              Solusi
+            </a>
             <a href="#fitur" className="hover:text-white">
-              Fitur
+              Semua Fitur
             </a>
-            <a href="#paket" className="hover:text-white">
-              Harga Paket
-            </a>
-            <a href="#kelas" className="hover:text-white">
-              Kelas & Trainer
-            </a>
-            <a href="#lokasi" className="hover:text-white">
-              Lokasi
+            <a href="#harga" className="hover:text-white">
+              Harga Langganan
             </a>
           </nav>
 
@@ -115,7 +168,7 @@ export default async function HomeProfilePage() {
                 href="/login"
                 className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-emerald-400"
               >
-                Masuk Staff <ArrowRight className="h-4 w-4" />
+                Coba Demo Aplikasi <ArrowRight className="h-4 w-4" />
               </Link>
             )}
           </div>
@@ -123,71 +176,105 @@ export default async function HomeProfilePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 px-4 py-20">
-        <div className="mx-auto max-w-6xl text-center">
+      <section className="border-b border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 px-4 py-20 text-center">
+        <div className="mx-auto max-w-4xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-300">
             <Sparkles className="h-3.5 w-3.5" />
-            Sistem Manajemen Gym Terintegrasi · QR Check-in & Portal Member
+            Platform SaaS Manajemen Gym #1 untuk Owner & Kasir
           </div>
           <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-            Latihan Lebih Konsisten di{" "}
-            <span className="text-emerald-400">{settings.name}</span>
+            Kelola Bisnis Gym Lebih Rapi Bersama{" "}
+            <span className="text-emerald-400">Gym Mate</span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-slate-300 sm:text-lg">
-            Peralatan lengkap, instruktur bersertifikat, presensi instan lewat
-            QR Code atau ID Member, serta manajemen membership transparan dalam
-            satu platform modern.
+            Tinggalkan buku catatan, Excel, dan rekap manual. Pantau member
+            aktif, presensi QR/ID, shift kasir anti selisih, POS produk, hingga
+            laba rugi gym Anda dari satu sistem terpusat.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="#paket"
-              className="rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
-            >
-              Lihat Harga Membership
-            </a>
-            <a
-              href={waGeneralUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800"
-            >
-              <MessageCircle className="h-4 w-4 text-emerald-400" />
-              Daftar via WhatsApp
-            </a>
             <Link
               href="/login"
-              className="rounded-xl border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-900"
+              className="rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-400"
             >
-              Login Owner / Kasir
+              Coba Demo Interaktif (Owner / Kasir)
             </Link>
+            <a
+              href="#harga"
+              className="rounded-xl border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+            >
+              Lihat Harga Langganan
+            </a>
+            <a
+              href={waSalesUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-900"
+            >
+              <MessageCircle className="h-4 w-4 text-emerald-400" />
+              Hubungi Tim Gym Mate
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Fitur Lengkap */}
-      <section id="fitur" className="mx-auto max-w-6xl px-4 py-20">
+      {/* Masalah yang Diselesaikan */}
+      <section id="masalah" className="mx-auto max-w-6xl px-4 py-16">
+        <div className="grid gap-6 rounded-3xl border border-slate-800 bg-slate-900/60 p-8 md:grid-cols-4">
+          {[
+            {
+              title: "Member Aktif Jelas",
+              desc: "Owner tahu persis jumlah member aktif, akan habis, dan churn tanpa hitung manual.",
+            },
+            {
+              title: "Presensi < 5 Detik",
+              desc: "Kasir cukup scan QR atau ketik ID Member. Member habis otomatis ditolak.",
+            },
+            {
+              title: "Uang Kas Terlacak 100%",
+              desc: "Setiap transaksi & pengeluaran tunai terikat ke shift kasir. Tidak ada selisih tanpa jejak.",
+            },
+            {
+              title: "Perpanjangan Naik",
+              desc: "Pengingat WhatsApp H-7 & Portal Member mandiri bikin member rajin perpanjang.",
+            },
+          ].map((item) => (
+            <div key={item.title}>
+              <h3 className="text-base font-bold text-emerald-400">
+                {item.title}
+              </h3>
+              <p className="mt-1.5 text-sm text-slate-300">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Semua Fitur Platform */}
+      <section id="fitur" className="mx-auto max-w-6xl px-4 py-12">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white">
-            Semua Fitur Unggulan Kami
+            Semua Fitur di Platform Gym Mate
           </h2>
           <p className="mt-2 text-sm text-slate-400">
-            Dirancang untuk kenyamanan member dan akurasi operasional gym
+            Lengkap untuk operasional front-desk kasir, kontrol owner, dan
+            kenyamanan member
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f) => {
             const Icon = f.icon;
             return (
               <div
                 key={f.title}
-                className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 transition hover:border-emerald-500/40"
+                className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 transition hover:border-emerald-500/40"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-white">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                <h3 className="mt-4 text-base font-bold text-white">
+                  {f.title}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
                   {f.desc}
                 </p>
               </div>
@@ -196,112 +283,93 @@ export default async function HomeProfilePage() {
         </div>
       </section>
 
-      {/* Harga Paket & Subscription */}
+      {/* Harga Langganan SaaS Bulanan */}
       <section
-        id="paket"
+        id="harga"
         className="border-y border-slate-800 bg-slate-900/50 px-4 py-20"
       >
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white">
-              Paket & Harga Membership
+              Harga Langganan Bulanan Gym Mate
             </h2>
             <p className="mt-2 text-sm text-slate-400">
-              Pilih paket harian atau langganan bulanan sesuai target latihan
-              Anda
+              Investasi terjangkau untuk menghemat puluhan jam rekap manual &
+              mencegah kebocoran kas
             </p>
           </div>
 
-          {promos.length > 0 && (
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              {promos.map((pr) => (
-                <div
-                  key={pr.id}
-                  className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-4 py-1.5 text-xs text-amber-200"
-                >
-                  <CreditCard className="h-3.5 w-3.5" />
-                  <span>
-                    <strong>{pr.name}</strong>
-                    {pr.code ? ` · Kode: ${pr.code}` : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {packages.map((pkg) => {
-              const isPopular = pkg.duration_days === 90;
-              const waPkgUrl = buildWhatsAppUrl(
-                settings.whatsapp_number || "081299998888",
-                `Halo ${settings.name}, saya tertarik mendaftar paket ${pkg.name} (${formatRupiah(pkg.price)}).`
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {SAAS_PLANS.map((plan) => {
+              const waOrder = buildWhatsAppUrl(
+                "081299998888",
+                `Halo Gym Mate, saya ingin berlangganan paket ${plan.name} (${formatRupiah(plan.monthlyPrice)}/bulan) untuk gym saya.`
               );
               return (
                 <div
-                  key={pkg.id}
-                  className={`flex flex-col justify-between rounded-3xl border p-6 ${
-                    isPopular
-                      ? "border-emerald-500 bg-slate-900 shadow-lg shadow-emerald-500/10"
+                  key={plan.name}
+                  className={`flex flex-col justify-between rounded-3xl border p-7 ${
+                    plan.popular
+                      ? "border-emerald-500 bg-slate-900 shadow-xl shadow-emerald-500/10"
                       : "border-slate-800 bg-slate-900/80"
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300">
-                        {pkg.type === "daily"
-                          ? "Kunjungan Harian"
-                          : `Durasi ${pkg.duration_days} Hari`}
+                      <h3 className="text-xl font-bold text-white">
+                        {plan.name}
+                      </h3>
+                      <span
+                        className={`rounded-full px-3 py-0.5 text-xs font-bold ${
+                          plan.popular
+                            ? "bg-emerald-500 text-slate-950"
+                            : "bg-slate-800 text-slate-300"
+                        }`}
+                      >
+                        {plan.badge}
                       </span>
-                      {isPopular && (
-                        <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-bold text-slate-950">
-                          Terpopuler
-                        </span>
-                      )}
                     </div>
-                    <h3 className="mt-4 text-xl font-bold text-white">
-                      {pkg.name}
-                    </h3>
-                    <p className="mt-2 text-3xl font-extrabold text-emerald-400">
-                      {formatRupiah(pkg.price)}
+                    <div className="mt-4 flex items-baseline gap-1">
+                      <span className="text-3xl font-extrabold text-emerald-400">
+                        {formatRupiah(plan.monthlyPrice)}
+                      </span>
+                      <span className="text-xs text-slate-400">/ bulan</span>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Bayar tahunan hemat 2 bulan (10x harga bulanan)
                     </p>
-                    <p className="mt-1 text-xs text-slate-400">
-                      {pkg.registration_fee > 0
-                        ? `+ Biaya pendaftaran awal ${formatRupiah(pkg.registration_fee)}`
-                        : "Bebas biaya pendaftaran"}
-                    </p>
-                    <p className="mt-4 text-sm text-slate-300">
-                      {pkg.description}
-                    </p>
-                    <ul className="mt-4 space-y-2 text-xs text-slate-300">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                        Akses penuh seluruh peralatan gym
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                        QR Code & ID Presensi pribadi
-                      </li>
-                      {pkg.type === "membership" && (
-                        <li className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                          Portal Member & fitur cuti (Freeze)
+                    <p className="mt-4 text-sm text-slate-300">{plan.desc}</p>
+
+                    <ul className="mt-6 space-y-2.5 text-xs text-slate-300">
+                      {plan.features.map((feat) => (
+                        <li key={feat} className="flex items-start gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                          <span>{feat}</span>
                         </li>
-                      )}
+                      ))}
                     </ul>
                   </div>
 
-                  <a
-                    href={waPkgUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={`mt-6 block rounded-xl py-2.5 text-center text-sm font-bold transition ${
-                      isPopular
-                        ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400"
-                        : "border border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
-                    }`}
-                  >
-                    Pilih Paket Ini
-                  </a>
+                  <div className="mt-8 space-y-2">
+                    <a
+                      href={waOrder}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`block rounded-xl py-2.5 text-center text-sm font-bold transition ${
+                        plan.popular
+                          ? "bg-emerald-500 text-slate-950 hover:bg-emerald-400"
+                          : "bg-slate-800 text-white hover:bg-slate-700"
+                      }`}
+                    >
+                      Pilih Paket {plan.name}
+                    </a>
+                    <Link
+                      href="/login"
+                      className="block rounded-xl border border-slate-700 py-2 text-center text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                    >
+                      Coba Demo Gratis
+                    </Link>
+                  </div>
                 </div>
               );
             })}
@@ -309,93 +377,25 @@ export default async function HomeProfilePage() {
         </div>
       </section>
 
-      {/* Kelas & Personal Trainer */}
-      <section id="kelas" className="mx-auto max-w-6xl px-4 py-20">
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-bold text-white">
-              Personal Trainer Bersertifikat
-            </h2>
-            <p className="mt-1 text-sm text-slate-400">
-              Latihan terarah sesuai target bulking, fat loss, atau kebugaran
-            </p>
-            <div className="mt-6 space-y-3">
-              {trainers.map((t) => (
-                <div
-                  key={t.id}
-                  className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900 p-4"
-                >
-                  <div>
-                    <p className="font-bold text-white">{t.name}</p>
-                    <p className="text-xs text-slate-400">
-                      {t.specialty || "General Fitness"}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-                    Tersedia
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-bold text-white">
-              Jadwal Kelas Terdekat
-            </h2>
-            <p className="mt-1 text-sm text-slate-400">
-              Ikuti kelas grup bersama instruktur berpengalaman
-            </p>
-            <div className="mt-6 space-y-3">
-              {classes.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900 p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <CalendarDays className="h-5 w-5 text-emerald-400" />
-                    <div>
-                      <p className="font-bold text-white">{c.title}</p>
-                      <p className="text-xs text-slate-400">
-                        {formatDateId(c.class_date)} · {c.start_time}–
-                        {c.end_time} · {c.trainer_name}
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-xs text-slate-300">
-                    {c.booked_count}/{c.max_capacity} slot
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Lokasi & Footer */}
-      <footer
-        id="lokasi"
-        className="border-t border-slate-800 bg-slate-900/70 px-4 py-12"
-      >
+      {/* Footer */}
+      <footer className="bg-slate-950 px-4 py-12">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 font-bold text-white">
-              <MapPin className="h-4 w-4 text-emerald-400" />
-              {settings.name}
+              <Dumbbell className="h-4 w-4 text-emerald-400" />
+              Gym Mate
             </div>
-            <p className="mt-1 text-sm text-slate-400">{settings.address}</p>
-            <p className="mt-1 text-xs text-slate-500">
-              Buka Setiap Hari · 06:00 – 22:00 WIB · WA:{" "}
-              {settings.whatsapp_number}
+            <p className="mt-1 text-xs text-slate-400">
+              Platform Manajemen Gym Modern untuk Owner, Kasir & Member
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 px-4 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25"
             >
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              Portal Staff (Owner / Kasir)
+              <CreditCard className="h-4 w-4" />
+              Masuk ke Demo Aplikasi
             </Link>
           </div>
         </div>

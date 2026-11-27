@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sistem Manajemen Gym",
-  description: "Aplikasi manajemen member, pembayaran, check-in, dan laporan gym",
+  title: "Gym Mate — Platform Manajemen Gym Modern",
+  description:
+    "Platform SaaS manajemen gym untuk owner dan kasir: member, presensi QR & ID, POS produk, shift kasir, freeze, PT, kelas, dan laporan laba rugi.",
 };
 
 export default function RootLayout({
