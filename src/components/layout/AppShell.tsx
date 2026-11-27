@@ -49,8 +49,21 @@ interface NavGroup {
   items: NavItem[];
 }
 
+const CASHIER_NAV: NavItem[] = [
+  { href: "/dashboard", label: "Dashboard Kasir", icon: LayoutDashboard },
+  { href: "/checkin", label: "Presensi (QR / ID)", icon: QrCode },
+  { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
+  { href: "/members", label: "Data Member", icon: Users },
+  { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket },
+  { href: "/transactions", label: "Transaksi", icon: CreditCard },
+  { href: "/shift", label: "Shift Kasir", icon: Clock },
+  { href: "/lockers", label: "Loker Member", icon: KeyRound },
+  { href: "/expiring", label: "Member Akan Habis", icon: BellRing },
+  { href: "/expenses", label: "Catat Pengeluaran", icon: Receipt },
+];
+
 const PRIMARY_NAV: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard Owner", icon: LayoutDashboard },
   { href: "/checkin", label: "Presensi (QR / ID)", icon: QrCode },
   { href: "/members", label: "Data Member", icon: Users },
   { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
@@ -62,21 +75,23 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "programs",
     label: "Layanan & Program",
+    ownerOnly: true,
     items: [
-      { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle },
-      { href: "/trainers", label: "Personal Trainer", icon: Dumbbell },
-      { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays },
-      { href: "/leads", label: "CRM Prospek & Trial", icon: UserPlus },
-      { href: "/lockers", label: "Manajemen Loker", icon: KeyRound },
-      { href: "/body-metrics", label: "Body Metrics & BMI", icon: Activity },
+      { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle, ownerOnly: true },
+      { href: "/trainers", label: "Personal Trainer", icon: Dumbbell, ownerOnly: true },
+      { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays, ownerOnly: true },
+      { href: "/leads", label: "CRM Prospek & Trial", icon: UserPlus, ownerOnly: true },
+      { href: "/lockers", label: "Manajemen Loker", icon: KeyRound, ownerOnly: true },
+      { href: "/body-metrics", label: "Body Metrics & BMI", icon: Activity, ownerOnly: true },
     ],
   },
   {
     id: "finance",
     label: "Keuangan & Produk",
+    ownerOnly: true,
     items: [
-      { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket },
-      { href: "/expenses", label: "Pengeluaran", icon: Receipt },
+      { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket, ownerOnly: true },
+      { href: "/expenses", label: "Pengeluaran", icon: Receipt, ownerOnly: true },
       { href: "/packages", label: "Paket Membership", icon: PackageIcon, ownerOnly: true },
       { href: "/products", label: "Produk POS", icon: ShoppingBag, ownerOnly: true },
       { href: "/stock", label: "Stok Produk", icon: Warehouse, ownerOnly: true },
@@ -99,9 +114,10 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "system",
     label: "Pengingat & Pengaturan",
+    ownerOnly: true,
     items: [
-      { href: "/expiring", label: "Member Akan Habis", icon: BellRing },
-      { href: "/whatsapp-logs", label: "WA Otomatis", icon: MessageSquare },
+      { href: "/expiring", label: "Member Akan Habis", icon: BellRing, ownerOnly: true },
+      { href: "/whatsapp-logs", label: "WA Otomatis", icon: MessageSquare, ownerOnly: true },
       { href: "/branches", label: "Cabang Gym", icon: Building2, ownerOnly: true },
       { href: "/staff", label: "Akun Staff", icon: UserCheck, ownerOnly: true },
       { href: "/activity-log", label: "Log Aktivitas", icon: Activity, ownerOnly: true },
@@ -189,10 +205,10 @@ export function AppShell({
       <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
         <div>
           <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Menu Utama
+            {staff.role === "owner" ? "Menu Utama" : "Operasional Kasir"}
           </p>
           <div className="space-y-1">
-            {PRIMARY_NAV.map((item) => {
+            {(staff.role === "owner" ? PRIMARY_NAV : CASHIER_NAV).map((item) => {
               const Icon = item.icon;
               const active = isRouteActive(item.href);
               return (
@@ -214,7 +230,8 @@ export function AppShell({
           </div>
         </div>
 
-        <div className="space-y-1.5 border-t border-blue-100 pt-3">
+        {visibleGroups.length > 0 && (
+          <div className="space-y-1.5 border-t border-blue-100 pt-3">
           {visibleGroups.map((group) => {
             const isOpen = openGroup === group.id;
             const hasActive = group.items.some((i) => isRouteActive(i.href));
@@ -262,7 +279,8 @@ export function AppShell({
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       </nav>
 
       <div className="space-y-2 border-t border-blue-100 p-3">
@@ -341,7 +359,12 @@ export function AppShell({
               {settings.name}
             </span>
             <span className="hidden text-xs font-semibold text-slate-500 lg:inline">
-              {settings.name} · Panel {staff.role === "owner" ? "Owner" : "Kasir"}
+              {settings.name} ·{" "}
+              <span className="rounded-md bg-blue-50 px-2 py-0.5 font-bold text-blue-700">
+                {staff.role === "owner"
+                  ? "Panel Owner (Manajemen Gym)"
+                  : "Panel Kasir (Front-Desk & POS)"}
+              </span>
             </span>
           </div>
           <div className="flex items-center gap-2">

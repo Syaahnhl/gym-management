@@ -91,32 +91,44 @@ export default async function DashboardPage() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Link
-            href="/checkin"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400"
+            href="/pos"
+            className="flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50/50 p-5 shadow-sm transition hover:border-blue-500"
           >
-            <div className="rounded-xl bg-emerald-100 p-3 text-emerald-700">
+            <div className="rounded-xl bg-blue-600 p-3 text-white">
+              <CreditCard className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="font-bold text-slate-900">Kasir POS</p>
+              <p className="text-xs text-slate-500">Jual produk &amp; cetak struk</p>
+            </div>
+          </Link>
+          <Link
+            href="/checkin"
+            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-400"
+          >
+            <div className="rounded-xl bg-blue-100 p-3 text-blue-700">
               <QrCode className="h-6 w-6" />
             </div>
             <div>
               <p className="font-bold text-slate-900">Check-in Member</p>
-              <p className="text-xs text-slate-500">Scan QR atau cari nama</p>
+              <p className="text-xs text-slate-500">Scan QR atau input ID</p>
             </div>
           </Link>
           <Link
             href="/members/new"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400"
+            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-400"
           >
             <div className="rounded-xl bg-sky-100 p-3 text-sky-700">
               <UserPlus className="h-6 w-6" />
             </div>
             <div>
               <p className="font-bold text-slate-900">Member Baru</p>
-              <p className="text-xs text-slate-500">Daftar & bayar paket</p>
+              <p className="text-xs text-slate-500">Daftar &amp; bayar paket</p>
             </div>
           </Link>
           <Link
             href="/daily-ticket"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400"
+            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-400"
           >
             <div className="rounded-xl bg-amber-100 p-3 text-amber-700">
               <Ticket className="h-6 w-6" />
@@ -124,18 +136,6 @@ export default async function DashboardPage() {
             <div>
               <p className="font-bold text-slate-900">Tiket Harian</p>
               <p className="text-xs text-slate-500">Walk-in pengunjung</p>
-            </div>
-          </Link>
-          <Link
-            href="/expiring"
-            className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400"
-          >
-            <div className="rounded-xl bg-rose-100 p-3 text-rose-700">
-              <BellRing className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900">Akan Habis</p>
-              <p className="text-xs text-slate-500">Kirim pengingat WA</p>
             </div>
           </Link>
         </div>
