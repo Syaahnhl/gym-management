@@ -9,6 +9,7 @@ import {
   BellRing,
   Building2,
   CalendarDays,
+  ChevronDown,
   Clock,
   CreditCard,
   Dumbbell,
@@ -41,35 +42,69 @@ interface NavItem {
   ownerOnly?: boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
+interface NavGroup {
+  id: string;
+  label: string;
+  ownerOnly?: boolean;
+  items: NavItem[];
+}
+
+const PRIMARY_NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/checkin", label: "Presensi (QR / ID)", icon: QrCode },
   { href: "/members", label: "Data Member", icon: Users },
-  { href: "/members/new", label: "Member Baru", icon: UserPlus },
-  { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket },
   { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
   { href: "/transactions", label: "Transaksi", icon: CreditCard },
-  { href: "/expiring", label: "Akan Habis", icon: BellRing },
-  { href: "/whatsapp-logs", label: "WA Otomatis", icon: MessageSquare },
-  { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle },
-  { href: "/trainers", label: "Personal Trainer", icon: Dumbbell },
-  { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays },
-  { href: "/expenses", label: "Pengeluaran", icon: Receipt },
   { href: "/shift", label: "Shift Kasir", icon: Clock },
-  { href: "/packages", label: "Paket Membership", icon: PackageIcon, ownerOnly: true },
-  { href: "/products", label: "Produk POS", icon: ShoppingBag, ownerOnly: true },
-  { href: "/stock", label: "Stok Produk", icon: Warehouse, ownerOnly: true },
-  { href: "/promotions", label: "Promo & Voucher", icon: Tag, ownerOnly: true },
-  { href: "/branches", label: "Cabang Gym", icon: Building2, ownerOnly: true },
-  { href: "/staff", label: "Akun Staff", icon: UserCheck, ownerOnly: true },
-  { href: "/reports/revenue", label: "Laporan Pendapatan", icon: BarChart3, ownerOnly: true },
-  { href: "/reports/profit-loss", label: "Laporan Laba Rugi", icon: BarChart3, ownerOnly: true },
-  { href: "/reports/members", label: "Laporan Member", icon: Users, ownerOnly: true },
-  { href: "/reports/checkins", label: "Laporan Check-in", icon: QrCode, ownerOnly: true },
-  { href: "/reports/promotions", label: "Laporan Promo", icon: Tag, ownerOnly: true },
-  { href: "/reports/commissions", label: "Komisi Trainer", icon: Dumbbell, ownerOnly: true },
-  { href: "/activity-log", label: "Log Aktivitas", icon: Activity, ownerOnly: true },
-  { href: "/settings", label: "Pengaturan Gym", icon: Settings, ownerOnly: true },
+];
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: "programs",
+    label: "Layanan & Program",
+    items: [
+      { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle },
+      { href: "/trainers", label: "Personal Trainer", icon: Dumbbell },
+      { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays },
+    ],
+  },
+  {
+    id: "finance",
+    label: "Keuangan & Produk",
+    items: [
+      { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket },
+      { href: "/expenses", label: "Pengeluaran", icon: Receipt },
+      { href: "/packages", label: "Paket Membership", icon: PackageIcon, ownerOnly: true },
+      { href: "/products", label: "Produk POS", icon: ShoppingBag, ownerOnly: true },
+      { href: "/stock", label: "Stok Produk", icon: Warehouse, ownerOnly: true },
+      { href: "/promotions", label: "Promo & Voucher", icon: Tag, ownerOnly: true },
+    ],
+  },
+  {
+    id: "reports",
+    label: "Laporan & Analitik",
+    ownerOnly: true,
+    items: [
+      { href: "/reports/revenue", label: "Pendapatan", icon: BarChart3, ownerOnly: true },
+      { href: "/reports/profit-loss", label: "Laba Rugi", icon: BarChart3, ownerOnly: true },
+      { href: "/reports/members", label: "Member", icon: Users, ownerOnly: true },
+      { href: "/reports/checkins", label: "Check-in", icon: QrCode, ownerOnly: true },
+      { href: "/reports/promotions", label: "Promo", icon: Tag, ownerOnly: true },
+      { href: "/reports/commissions", label: "Komisi Trainer", icon: Dumbbell, ownerOnly: true },
+    ],
+  },
+  {
+    id: "system",
+    label: "Pengingat & Pengaturan",
+    items: [
+      { href: "/expiring", label: "Member Akan Habis", icon: BellRing },
+      { href: "/whatsapp-logs", label: "WA Otomatis", icon: MessageSquare },
+      { href: "/branches", label: "Cabang Gym", icon: Building2, ownerOnly: true },
+      { href: "/staff", label: "Akun Staff", icon: UserCheck, ownerOnly: true },
+      { href: "/activity-log", label: "Log Aktivitas", icon: Activity, ownerOnly: true },
+      { href: "/settings", label: "Pengaturan Gym", icon: Settings, ownerOnly: true },
+    ],
+  },
 ];
 
 export function AppShell({
@@ -91,9 +126,23 @@ export function AppShell({
   const [newPassword, setNewPassword] = useState("");
   const [pwMsg, setPwMsg] = useState<string | null>(null);
 
-  const visibleItems = NAV_ITEMS.filter(
-    (item) => !item.ownerOnly || staff.role === "owner"
-  );
+  const isRouteActive = (href: string) =>
+    pathname === href ||
+    (href !== "/members" && pathname.startsWith(`${href}/`));
+
+  const initialOpenGroup =
+    NAV_GROUPS.find((g) => g.items.some((item) => isRouteActive(item.href)))
+      ?.id ?? null;
+  const [openGroup, setOpenGroup] = useState<string | null>(initialOpenGroup);
+
+  const visibleGroups = NAV_GROUPS.filter(
+    (g) => !g.ownerOnly || staff.role === "owner"
+  )
+    .map((g) => ({
+      ...g,
+      items: g.items.filter((i) => !i.ownerOnly || staff.role === "owner"),
+    }))
+    .filter((g) => g.items.length > 0);
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -134,28 +183,83 @@ export function AppShell({
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {visibleItems.map((item) => {
-          const Icon = item.icon;
-          const active =
-            pathname === item.href ||
-            (item.href !== "/members" && pathname.startsWith(`${item.href}/`));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                active
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"
-              }`}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+        <div>
+          <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Menu Utama
+          </p>
+          <div className="space-y-1">
+            {PRIMARY_NAV.map((item) => {
+              const Icon = item.icon;
+              const active = isRouteActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    active
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-1.5 border-t border-blue-100 pt-3">
+          {visibleGroups.map((group) => {
+            const isOpen = openGroup === group.id;
+            const hasActive = group.items.some((i) => isRouteActive(i.href));
+            return (
+              <div key={group.id}>
+                <button
+                  type="button"
+                  onClick={() => setOpenGroup(isOpen ? null : group.id)}
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wide transition ${
+                    hasActive
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                  }`}
+                >
+                  <span>{group.label}</span>
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition ${
+                      isOpen ? "rotate-180 text-blue-600" : ""
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="mt-1 space-y-0.5 pl-2">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const active = isRouteActive(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={`flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                            active
+                              ? "bg-blue-600 text-white shadow-sm"
+                              : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"
+                          }`}
+                        >
+                          <Icon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </nav>
 
       <div className="space-y-2 border-t border-blue-100 p-3">
@@ -220,22 +324,37 @@ export function AppShell({
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Mobile Header */}
-        <header className="no-print sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            className="rounded-lg border border-slate-200 p-2 text-slate-700"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <span className="text-sm font-bold text-slate-900">{settings.name}</span>
-          <Link
-            href="/checkin"
-            className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white"
-          >
-            Check-in
-          </Link>
+        {/* Top Quick-Action Header */}
+        <header className="no-print sticky top-0 z-30 flex items-center justify-between border-b border-blue-100 bg-white/95 px-4 py-3 backdrop-blur md:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              className="rounded-lg border border-blue-200 p-2 text-blue-700 lg:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <span className="text-sm font-bold text-slate-900 lg:hidden">
+              {settings.name}
+            </span>
+            <span className="hidden text-xs font-semibold text-slate-500 lg:inline">
+              {settings.name} · Panel {staff.role === "owner" ? "Owner" : "Kasir"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/members/new"
+              className="hidden items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 sm:inline-flex"
+            >
+              <UserPlus className="h-3.5 w-3.5" /> Member Baru
+            </Link>
+            <Link
+              href="/checkin"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+            >
+              <QrCode className="h-3.5 w-3.5" /> Scan QR
+            </Link>
+          </div>
         </header>
 
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>

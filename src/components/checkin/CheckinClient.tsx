@@ -43,10 +43,12 @@ export function CheckinClient({
   const [manualIdInput, setManualIdInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [cameraOn, setCameraOn] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const [result, setResult] = useState<CheckinResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkins, setCheckins] = useState<TodayCheckinRow[]>(initialCheckins);
   const scanRef = useRef<HTMLInputElement>(null);
+  const lastScanRef = useRef<{ code: string; at: number }>({ code: "", at: 0 });
 
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -99,29 +101,69 @@ export function CheckinClient({
   }
 
   useEffect(() => {
-    if (!cameraOn) return;
-    let scanner: { clear: () => Promise<void> } | null = null;
-    let active = true;
+    if (!cameraOn) {
+      setCameraError(null);
+      return;
+    }
 
-    import("html5-qrcode").then(({ Html5QrcodeScanner }) => {
-      if (!active) return;
-      const instance = new Html5QrcodeScanner(
-        "qr-reader",
-        { fps: 10, qrbox: { width: 220, height: 220 } },
-        false
-      );
-      instance.render(
-        (decodedText) => {
+    let active = true;
+    let qrInstance: {
+      stop: () => Promise<void>;
+      clear: () => void;
+    } | null = null;
+
+    async function startCamera() {
+      try {
+        setCameraError(null);
+        const { Html5Qrcode } = await import("html5-qrcode");
+        if (!active) return;
+
+        const qr = new Html5Qrcode("qr-reader");
+        qrInstance = qr;
+
+        const onDecoded = (decodedText: string) => {
+          const now = Date.now();
+          if (
+            lastScanRef.current.code === decodedText &&
+            now - lastScanRef.current.at < 3000
+          ) {
+            return;
+          }
+          lastScanRef.current = { code: decodedText, at: now };
           submitCheckin({ query: decodedText, method: "qr" });
-        },
-        () => {}
-      );
-      scanner = instance;
-    });
+        };
+
+        const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+        try {
+          await qr.start({ facingMode: "environment" }, config, onDecoded, () => {});
+        } catch {
+          const cameras = await Html5Qrcode.getCameras();
+          if (!cameras || cameras.length === 0) {
+            throw new Error("Kamera tidak ditemukan pada perangkat ini.");
+          }
+          await qr.start(cameras[0].id, config, onDecoded, () => {});
+        }
+      } catch (err) {
+        if (!active) return;
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "Gagal membuka kamera. Pastikan izin kamera diizinkan oleh browser.";
+        setCameraError(msg);
+        setCameraOn(false);
+      }
+    }
+
+    startCamera();
 
     return () => {
       active = false;
-      scanner?.clear().catch(() => {});
+      if (qrInstance) {
+        qrInstance
+          .stop()
+          .then(() => qrInstance?.clear())
+          .catch(() => {});
+      }
     };
   }, [cameraOn]);
 
@@ -131,7 +173,7 @@ export function CheckinClient({
     ? "border-rose-300 bg-rose-50 text-rose-900"
     : result.member.status_info.status === "expiring"
     ? "border-amber-300 bg-amber-50 text-amber-900"
-    : "border-emerald-300 bg-emerald-50 text-emerald-900";
+    : "border-blue-300 bg-blue-50 text-blue-900";
 
   const uniqueTodayCount = new Set(
     checkins.filter((c) => !c.is_duplicate).map((c) => c.code)
@@ -148,14 +190,14 @@ export function CheckinClient({
             Scan QR Code member atau masukkan ID Member manual jika QR bermasalah
           </p>
         </div>
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs text-emerald-900">
+        <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-xs text-blue-900">
           Hadir Hari Ini: <strong>{uniqueTodayCount} member</strong> ({checkins.length} total scan)
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Panel Scan & Presensi Manual ID */}
-        <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="space-y-5 rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -175,11 +217,11 @@ export function CheckinClient({
                 value={scanInput}
                 onChange={(e) => setScanInput(e.target.value)}
                 placeholder="Arahkan scanner QR (cth: GYM-00001)"
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-emerald-500 focus:outline-none"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-blue-600 focus:outline-none"
               />
               <button
                 type="submit"
-                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Scan QR
               </button>
@@ -203,11 +245,11 @@ export function CheckinClient({
                 value={manualIdInput}
                 onChange={(e) => setManualIdInput(e.target.value)}
                 placeholder="Ketik ID: GYM-00001 atau cukup angka 1"
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-sky-500 focus:outline-none"
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-mono focus:border-blue-600 focus:outline-none"
               />
               <button
                 type="submit"
-                className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+                className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100"
               >
                 Presensi ID
               </button>
@@ -217,12 +259,16 @@ export function CheckinClient({
           <div className="border-t border-slate-100 pt-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-slate-800">
-                Kamera QR Scanner
+                3. Kamera QR Scanner
               </span>
               <button
                 type="button"
                 onClick={() => setCameraOn(!cameraOn)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                  cameraOn
+                    ? "bg-rose-600 text-white hover:bg-rose-700"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
               >
                 {cameraOn ? (
                   <>
@@ -230,12 +276,22 @@ export function CheckinClient({
                   </>
                 ) : (
                   <>
-                    <Camera className="h-4 w-4" /> Aktifkan Kamera
+                    <Camera className="h-4 w-4" /> Buka Kamera Scan QR
                   </>
                 )}
               </button>
             </div>
-            {cameraOn && <div id="qr-reader" className="mt-3 overflow-hidden rounded-xl" />}
+            {cameraError && (
+              <p className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                {cameraError}
+              </p>
+            )}
+            {cameraOn && (
+              <div
+                id="qr-reader"
+                className="mt-3 overflow-hidden rounded-xl border border-blue-200 bg-slate-950"
+              />
+            )}
           </div>
 
           <div className="border-t border-slate-100 pt-4">
