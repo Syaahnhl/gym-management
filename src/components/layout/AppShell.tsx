@@ -64,38 +64,35 @@ const CASHIER_NAV: NavItem[] = [
 
 const PRIMARY_NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard Owner", icon: LayoutDashboard },
-  { href: "/checkin", label: "Presensi (QR / ID)", icon: QrCode },
   { href: "/members", label: "Data Member", icon: Users },
-  { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
-  { href: "/transactions", label: "Transaksi", icon: CreditCard },
-  { href: "/shift", label: "Shift Kasir", icon: Clock },
+  { href: "/transactions", label: "Pantau Transaksi", icon: CreditCard },
+  { href: "/reports/profit-loss", label: "Laba Rugi", icon: BarChart3, ownerOnly: true },
+  { href: "/reports/revenue", label: "Pendapatan", icon: BarChart3, ownerOnly: true },
 ];
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    id: "programs",
-    label: "Layanan & Program",
+    id: "catalog",
+    label: "Menu, Harga & Stok",
     ownerOnly: true,
     items: [
-      { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle, ownerOnly: true },
-      { href: "/trainers", label: "Personal Trainer", icon: Dumbbell, ownerOnly: true },
-      { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays, ownerOnly: true },
-      { href: "/leads", label: "CRM Prospek & Trial", icon: UserPlus, ownerOnly: true },
-      { href: "/lockers", label: "Manajemen Loker", icon: KeyRound, ownerOnly: true },
-      { href: "/body-metrics", label: "Body Metrics & BMI", icon: Activity, ownerOnly: true },
+      { href: "/packages", label: "Paket & Harga", icon: PackageIcon, ownerOnly: true },
+      { href: "/products", label: "Produk & Harga POS", icon: ShoppingBag, ownerOnly: true },
+      { href: "/stock", label: "Stok Produk", icon: Warehouse, ownerOnly: true },
+      { href: "/promotions", label: "Promo & Voucher", icon: Tag, ownerOnly: true },
+      { href: "/expenses", label: "Pengeluaran", icon: Receipt, ownerOnly: true },
     ],
   },
   {
-    id: "finance",
-    label: "Keuangan & Produk",
+    id: "programs",
+    label: "Program & Layanan",
     ownerOnly: true,
     items: [
-      { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket, ownerOnly: true },
-      { href: "/expenses", label: "Pengeluaran", icon: Receipt, ownerOnly: true },
-      { href: "/packages", label: "Paket Membership", icon: PackageIcon, ownerOnly: true },
-      { href: "/products", label: "Produk POS", icon: ShoppingBag, ownerOnly: true },
-      { href: "/stock", label: "Stok Produk", icon: Warehouse, ownerOnly: true },
-      { href: "/promotions", label: "Promo & Voucher", icon: Tag, ownerOnly: true },
+      { href: "/trainers", label: "Personal Trainer", icon: Dumbbell, ownerOnly: true },
+      { href: "/classes", label: "Jadwal Kelas", icon: CalendarDays, ownerOnly: true },
+      { href: "/freezes", label: "Freeze / Cuti", icon: PauseCircle, ownerOnly: true },
+      { href: "/leads", label: "CRM Prospek & Trial", icon: UserPlus, ownerOnly: true },
+      { href: "/body-metrics", label: "Body Metrics & BMI", icon: Activity, ownerOnly: true },
     ],
   },
   {
@@ -103,23 +100,21 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Laporan & Analitik",
     ownerOnly: true,
     items: [
-      { href: "/reports/revenue", label: "Pendapatan", icon: BarChart3, ownerOnly: true },
-      { href: "/reports/profit-loss", label: "Laba Rugi", icon: BarChart3, ownerOnly: true },
-      { href: "/reports/members", label: "Member", icon: Users, ownerOnly: true },
-      { href: "/reports/checkins", label: "Check-in", icon: QrCode, ownerOnly: true },
-      { href: "/reports/promotions", label: "Promo", icon: Tag, ownerOnly: true },
+      { href: "/reports/members", label: "Statistik Member", icon: Users, ownerOnly: true },
+      { href: "/reports/checkins", label: "Laporan Check-in", icon: QrCode, ownerOnly: true },
+      { href: "/reports/promotions", label: "Efektivitas Promo", icon: Tag, ownerOnly: true },
       { href: "/reports/commissions", label: "Komisi Trainer", icon: Dumbbell, ownerOnly: true },
     ],
   },
   {
     id: "system",
-    label: "Pengingat & Pengaturan",
+    label: "Pengawasan & Pengaturan",
     ownerOnly: true,
     items: [
       { href: "/expiring", label: "Member Akan Habis", icon: BellRing, ownerOnly: true },
       { href: "/whatsapp-logs", label: "WA Otomatis", icon: MessageSquare, ownerOnly: true },
       { href: "/branches", label: "Cabang Gym", icon: Building2, ownerOnly: true },
-      { href: "/staff", label: "Akun Staff", icon: UserCheck, ownerOnly: true },
+      { href: "/staff", label: "Akun Staff & Kasir", icon: UserCheck, ownerOnly: true },
       { href: "/activity-log", label: "Log Aktivitas", icon: Activity, ownerOnly: true },
       { href: "/settings", label: "Pengaturan Gym", icon: Settings, ownerOnly: true },
     ],
@@ -284,17 +279,19 @@ export function AppShell({
       </nav>
 
       <div className="space-y-2 border-t border-blue-100 p-3">
-        <Link
-          href="/shift"
-          onClick={() => setMobileOpen(false)}
-          className={`block rounded-lg border px-3 py-2 text-xs font-medium ${
-            openShift
-              ? "border-blue-200 bg-blue-50 text-blue-700"
-              : "border-amber-200 bg-amber-50 text-amber-800"
-          }`}
-        >
-          {openShift ? "Shift Terbuka (Aktif)" : "Shift Belum Dibuka"}
-        </Link>
+        {staff.role === "cashier" && (
+          <Link
+            href="/shift"
+            onClick={() => setMobileOpen(false)}
+            className={`block rounded-lg border px-3 py-2 text-xs font-medium ${
+              openShift
+                ? "border-blue-200 bg-blue-50 text-blue-700"
+                : "border-amber-200 bg-amber-50 text-amber-800"
+            }`}
+          >
+            {openShift ? "Shift Terbuka (Aktif)" : "Shift Belum Dibuka"}
+          </Link>
+        )}
         <div className="flex gap-2">
           <button
             type="button"
@@ -368,18 +365,37 @@ export function AppShell({
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              href="/members/new"
-              className="hidden items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 sm:inline-flex"
-            >
-              <UserPlus className="h-3.5 w-3.5" /> Member Baru
-            </Link>
-            <Link
-              href="/checkin"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
-            >
-              <QrCode className="h-3.5 w-3.5" /> Scan QR
-            </Link>
+            {staff.role === "owner" ? (
+              <>
+                <Link
+                  href="/packages"
+                  className="hidden items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 sm:inline-flex"
+                >
+                  <PackageIcon className="h-3.5 w-3.5" /> Edit Harga &amp; Paket
+                </Link>
+                <Link
+                  href="/reports/profit-loss"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                >
+                  <BarChart3 className="h-3.5 w-3.5" /> Laba Rugi
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/pos"
+                  className="hidden items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 sm:inline-flex"
+                >
+                  <ShoppingCart className="h-3.5 w-3.5" /> Kasir POS
+                </Link>
+                <Link
+                  href="/checkin"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                >
+                  <QrCode className="h-3.5 w-3.5" /> Scan QR
+                </Link>
+              </>
+            )}
           </div>
         </header>
 

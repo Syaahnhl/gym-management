@@ -256,16 +256,16 @@ export default async function DashboardPage() {
         </div>
         <div className="flex gap-2">
           <Link
-            href="/checkin"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+            href="/packages"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            Buka Check-in
+            Edit Paket &amp; Harga
           </Link>
           <Link
-            href="/reports/revenue"
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            href="/reports/profit-loss"
+            className="rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
           >
-            Lihat Laporan
+            Laporan Laba Rugi
           </Link>
         </div>
       </div>
