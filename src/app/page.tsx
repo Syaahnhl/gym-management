@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { getCurrentStaff } from "@/lib/auth/session";
 import { buildWhatsAppUrl } from "@/lib/domain/format";
-import { PricingAndFaqSection } from "@/components/landing/PricingSection";
+import { RoleShowcaseSection } from "@/components/landing/RoleShowcaseSection";
 import { QrWorkflowShowcase } from "@/components/checkin/QrWorkflowShowcase";
 import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { GymMateLogo } from "@/components/ui/GymMateLogo";
@@ -85,7 +85,7 @@ export default async function GymMateLandingPage() {
         navLinks={[
           { href: "#perbandingan", label: "Masalah & Solusi" },
           { href: "#fitur", label: "Fitur" },
-          { href: "#harga", label: "Paket Sistem" },
+          { href: "#peran", label: "3 Peran" },
           { href: "#faq", label: "FAQ" },
         ]}
       />
@@ -129,10 +129,10 @@ export default async function GymMateLandingPage() {
                 Coba Demo Live Gratis <ArrowRight className="h-4 w-4" />
               </Link>
               <a
-                href="#harga"
+                href="#peran"
                 className="rounded-xl border border-blue-200 bg-white px-6 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-50"
               >
-                Lihat Harga Bulanan
+                Lihat 3 Peran Sistem
               </a>
               <a
                 href={waSalesUrl}
@@ -338,8 +338,8 @@ export default async function GymMateLandingPage() {
         </div>
       </section>
 
-      {/* Harga Langganan + FAQ */}
-      <PricingAndFaqSection />
+      {/* Preview 3 Peran + Before vs After + FAQ Teknis */}
+      <RoleShowcaseSection />
 
       {/* Final CTA Banner */}
       <section className="mx-auto max-w-6xl px-4 pb-20">

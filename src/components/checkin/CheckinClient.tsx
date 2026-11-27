@@ -216,6 +216,10 @@ export function CheckinClient({
           <QrScanAnimationBox
             isScanning={isScanAnimating}
             demoCode={members[0]?.member_code || "GYM-00001"}
+            onDetectedCode={(code) => {
+              setScanInput(code);
+              submitCheckin({ query: code, method: "qr" });
+            }}
             onSimulateScan={() => {
               const target =
                 members.find((m) => m.status === "active") || members[0];

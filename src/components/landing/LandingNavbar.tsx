@@ -25,25 +25,25 @@ const SUB_FEATURES = [
     icon: Scale,
     title: "Input BB & Pantau BMI",
     desc: "Catat berat badan saat check-in, hitung BMI otomatis & pantau progres member.",
-    href: "#solusi",
+    href: "#peran",
   },
   {
     icon: ShoppingCart,
     title: "Kasir POS & Shift Kasir",
     desc: "Jual produk, minuman, suplemen & tutup shift kasir anti-selisih.",
-    href: "#solusi",
+    href: "#peran",
   },
   {
     icon: TrendingUp,
     title: "Panel Owner & Laba Rugi",
     desc: "Pantau omzet, pengeluaran, dan edit harga paket/produk dari satu panel.",
-    href: "#solusi",
+    href: "#peran",
   },
   {
     icon: UserCheck,
     title: "Portal Member Digital",
     desc: "Member punya kartu QR sendiri, cek masa aktif, dan pantau grafik BMI.",
-    href: "#solusi",
+    href: "#peran",
   },
 ];
 
