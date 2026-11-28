@@ -35,6 +35,7 @@ export function PosClient({
   const [newMemberPhone, setNewMemberPhone] = useState("");
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [newMemberGender, setNewMemberGender] = useState<"L" | "P">("L");
+  const [renewSearch, setRenewSearch] = useState("");
   const [discount, setDiscount] = useState(0);
   const [discountReason, setDiscountReason] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
@@ -448,9 +449,63 @@ export function PosClient({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[11px] text-blue-800">
-                    Pilih member pada kolom Pembeli di atas untuk memperpanjang paketnya.
-                  </p>
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={renewSearch}
+                      onChange={(e) => setRenewSearch(e.target.value)}
+                      placeholder="Ketik nama, no HP, atau kode GYM-..."
+                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs focus:border-blue-600 focus:outline-none"
+                    />
+                    {memberId ? (
+                      (() => {
+                        const chosen = members.find((m) => m.id === memberId);
+                        return chosen ? (
+                          <div className="flex items-center justify-between rounded-lg border border-blue-300 bg-white px-3 py-2 text-xs">
+                            <div>
+                              <span className="font-bold text-slate-900">{chosen.full_name}</span>{" "}
+                              <span className="font-mono text-blue-600">({chosen.member_code})</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setMemberId("")}
+                              className="text-xs font-semibold text-rose-600 hover:underline"
+                            >
+                              Ganti
+                            </button>
+                          </div>
+                        ) : null;
+                      })()
+                    ) : (
+                      <div className="max-h-36 overflow-y-auto divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
+                        {members
+                          .filter((m) => {
+                            const q = renewSearch.trim().toLowerCase();
+                            if (!q) return true;
+                            return (
+                              m.full_name.toLowerCase().includes(q) ||
+                              m.member_code.toLowerCase().includes(q) ||
+                              m.phone.toLowerCase().includes(q)
+                            );
+                          })
+                          .slice(0, 6)
+                          .map((m) => (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => {
+                                setMemberId(m.id);
+                                setRenewSearch("");
+                              }}
+                              className="flex w-full items-center justify-between px-3 py-2 text-left text-xs hover:bg-blue-50"
+                            >
+                              <span className="font-semibold text-slate-900">{m.full_name}</span>
+                              <span className="font-mono text-slate-500">{m.member_code}</span>
+                            </button>
+                          ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
