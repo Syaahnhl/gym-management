@@ -52,7 +52,7 @@ interface NavGroup {
 
 const CASHIER_NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard Kasir", icon: LayoutDashboard },
-  { href: "/checkin", label: "Presensi (QR / ID)", icon: QrCode },
+  { href: "/checkin", label: "Log Absensi Harian", icon: QrCode },
   { href: "/pos", label: "Kasir POS", icon: ShoppingCart },
   { href: "/members", label: "Data Member", icon: Users },
   { href: "/daily-ticket", label: "Tiket Harian", icon: Ticket },

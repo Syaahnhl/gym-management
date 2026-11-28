@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Camera, CameraOff, CheckCircle2, Search, XCircle } from "lucide-react";
-import type { BodyMetric, ComputedMemberStatus } from "@/types/database";
+import { QrCode, Camera, CameraOff, CheckCircle2, Search, XCircle } from "lucide-react";
+import type { ComputedMemberStatus } from "@/types/database";
 import type { MemberWithStatus } from "@/lib/db/service";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { QrCodeBox } from "@/components/ui/QrCodeBox";
 import { formatDateId, formatDateTimeWib } from "@/lib/domain/format";
 import { QrScanAnimationBox } from "@/components/checkin/QrScanAnimationBox";
-import { BmiQuickPanel } from "@/components/checkin/BmiQuickPanel";
 
 interface QuickMember {
   id: string;
@@ -50,8 +50,7 @@ export function CheckinClient({
   const [error, setError] = useState<string | null>(null);
   const [checkins, setCheckins] = useState<TodayCheckinRow[]>(initialCheckins);
   const [isScanAnimating, setIsScanAnimating] = useState(false);
-  const [memberMetrics, setMemberMetrics] = useState<BodyMetric[]>([]);
-  const [savingMetric, setSavingMetric] = useState(false);
+  const [showGymQr, setShowGymQr] = useState(true);
   const scanRef = useRef<HTMLInputElement>(null);
   const lastScanRef = useRef<{ code: string; at: number }>({ code: "", at: 0 });
 
@@ -86,14 +85,6 @@ export function CheckinClient({
       return;
     }
     setResult(data);
-    if (data.member?.id) {
-      fetch(`/api/body-metrics?member_id=${encodeURIComponent(data.member.id)}`)
-        .then((r) => (r.ok ? r.json() : { metrics: [] }))
-        .then((bm) => setMemberMetrics(Array.isArray(bm.metrics) ? bm.metrics : []))
-        .catch(() => setMemberMetrics([]));
-    } else {
-      setMemberMetrics([]);
-    }
     if (data.allowed && data.checkin) {
       setIsScanAnimating(true);
       setTimeout(() => setIsScanAnimating(false), 1200);
@@ -211,23 +202,81 @@ export function CheckinClient({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Panel Scan & Presensi Manual ID */}
-        <div className="space-y-5 rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
-          <QrScanAnimationBox
-            isScanning={isScanAnimating}
-            demoCode={members[0]?.member_code || "GYM-00001"}
-            onDetectedCode={(code) => {
-              setScanInput(code);
-              submitCheckin({ query: code, method: "qr" });
-            }}
-            onSimulateScan={() => {
-              const target =
-                members.find((m) => m.status === "active") || members[0];
-              if (target) {
-                submitCheckin({ query: target.member_code, method: "qr" });
-              }
-            }}
-          />
+        <div className="space-y-5">
+          {/* Top bar: Tampilkan QR untuk Presensi & Buka Kamera Scan QR Absensi */}
+          <div className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <QrCode className="h-5 w-5 text-blue-600" />
+                <h2 className="text-base font-bold text-slate-900">
+                  QR Check-in Gym & Scanner Absensi
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowGymQr((v) => !v)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
+                >
+                  <QrCode className="h-3.5 w-3.5" />
+                  {showGymQr ? "Sembunyikan QR Gym" : "Tampilkan QR untuk Presensi"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCameraOn((v) => !v)}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition ${
+                    cameraOn ? "bg-rose-600 hover:bg-rose-700" : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {cameraOn ? (
+                    <>
+                      <CameraOff className="h-3.5 w-3.5" /> Tutup Kamera
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="h-3.5 w-3.5" /> Buka Kamera Scan QR Absensi
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {showGymQr && (
+              <div className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="bg-white p-2 rounded-xl border border-slate-200 shrink-0">
+                  <QrCodeBox value="GYMMATE-CHECKIN-GYM" size={128} />
+                </div>
+                <div className="text-center sm:text-left space-y-1">
+                  <span className="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">
+                    QR Check-in Gym (Scan dari HP Member)
+                  </span>
+                  <p className="text-sm font-bold text-slate-900">
+                    Tunjukkan QR ini di meja kasir
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    Member scan QR ini dari Portal Member, lalu input ID Unik & Berat/Tinggi Badan secara mandiri.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-5 rounded-2xl border border-blue-100 bg-white p-6 shadow-sm">
+            <QrScanAnimationBox
+              isScanning={isScanAnimating}
+              demoCode={members[0]?.member_code || "GYM-00001"}
+              onDetectedCode={(code) => {
+                setScanInput(code);
+                submitCheckin({ query: code, method: "qr" });
+              }}
+              onSimulateScan={() => {
+                const target =
+                  members.find((m) => m.status === "active") || members[0];
+                if (target) {
+                  submitCheckin({ query: target.member_code, method: "qr" });
+                }
+              }}
+            />
 
           <form
             onSubmit={(e) => {
@@ -365,6 +414,7 @@ export function CheckinClient({
               </div>
             )}
           </div>
+          </div>
         </div>
 
         {/* Panel Hasil Scan */}
@@ -419,35 +469,6 @@ export function CheckinClient({
                 </div>
               </div>
 
-              {result.allowed && (
-                <BmiQuickPanel
-                  memberName={result.member.full_name}
-                  metrics={memberMetrics}
-                  saving={savingMetric}
-                  onSaveMetric={async (payload) => {
-                    setSavingMetric(true);
-                    try {
-                      const res = await fetch("/api/body-metrics", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          member_id: result.member.id,
-                          ...payload,
-                        }),
-                      });
-                      if (res.ok) {
-                        const data = await res.json();
-                        if (data.metric) {
-                          setMemberMetrics((prev) => [data.metric, ...prev]);
-                        }
-                      }
-                    } finally {
-                      setSavingMetric(false);
-                    }
-                  }}
-                />
-              )}
-
               {!result.allowed && result.member.is_active && (
                 <Link
                   href={`/renew/${result.member.id}`}
@@ -461,7 +482,7 @@ export function CheckinClient({
 
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 className="text-base font-bold text-slate-900">
-              Check-in Hari Ini ({checkins.length})
+              Log Absensi Harian ({checkins.length})
             </h3>
             <div className="mt-3 max-h-80 space-y-2 overflow-y-auto text-sm">
               {checkins.map((c) => (
