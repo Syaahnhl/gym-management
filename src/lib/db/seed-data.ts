@@ -85,11 +85,26 @@ export function createInitialSeedData(): LocalDbSchema {
   const todayStr = format(zonedNow, "yyyy-MM-dd");
   const defaultPasswordHash = hashPassword("gym123456");
 
+  const superadminId = "11111111-1111-1111-1111-111111111100";
+  const superadminEmail =
+    process.env.SUPERADMIN_EMAIL?.trim() || "superadmin@gymmate.id";
+  const superadminPasswordHash = hashPassword(
+    process.env.SUPERADMIN_PASSWORD || "gym123456"
+  );
   const ownerId = "11111111-1111-1111-1111-111111111101";
   const kasir1Id = "11111111-1111-1111-1111-111111111102";
   const kasir2Id = "11111111-1111-1111-1111-111111111103";
 
   const users: StaffUser[] = [
+    {
+      id: superadminId,
+      name: "Superadmin GymMate",
+      email: superadminEmail,
+      password_hash: superadminPasswordHash,
+      role: "superadmin",
+      is_active: true,
+      created_at: subDays(now, 90).toISOString(),
+    },
     {
       id: ownerId,
       name: "Hendra Wijaya (Owner)",

@@ -1,4 +1,4 @@
-export type StaffRole = "owner" | "cashier";
+export type StaffRole = "superadmin" | "owner" | "cashier";
 export type PackageType = "membership" | "daily";
 export type Gender = "L" | "P";
 export type MembershipStatus = "active" | "void";

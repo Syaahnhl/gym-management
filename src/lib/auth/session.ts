@@ -113,7 +113,11 @@ export async function requireApiStaff(
     };
   }
 
-  if (allowedRoles && !allowedRoles.includes(staff.role)) {
+  if (
+    allowedRoles &&
+    staff.role !== "superadmin" &&
+    !allowedRoles.includes(staff.role)
+  ) {
     return {
       error: NextResponse.json(
         { error: "Anda tidak memiliki izin untuk mengakses fitur ini." },

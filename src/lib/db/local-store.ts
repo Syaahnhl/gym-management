@@ -1,8 +1,11 @@
+import os from "os";
 import fs from "fs";
 import path from "path";
-import { createInitialSeedData, type LocalDbSchema } from "./seed-data";
+import { createInitialSeedData, hashPassword, type LocalDbSchema } from "./seed-data";
 
-const DATA_DIR = path.join(process.cwd(), ".data");
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), "gymmate-data")
+  : path.join(process.cwd(), ".data");
 const DB_FILE = path.join(DATA_DIR, "gym-db.json");
 
 let memoryCache: LocalDbSchema | null = null;
@@ -93,6 +96,17 @@ export function readLocalDb(): LocalDbSchema {
     parsed.gym_settings.freeze_max_days = 30;
     parsed.gym_settings.freeze_max_days_per_period = 30;
     parsed.gym_settings.freeze_fee = 0;
+  }
+  if (!parsed.users.some((u) => u.role === "superadmin")) {
+    parsed.users.unshift({
+      id: "11111111-1111-1111-1111-111111111100",
+      name: "Superadmin GymMate",
+      email: process.env.SUPERADMIN_EMAIL?.trim() || "superadmin@gymmate.id",
+      password_hash: hashPassword(process.env.SUPERADMIN_PASSWORD || "gym123456"),
+      role: "superadmin",
+      is_active: true,
+      created_at: new Date().toISOString(),
+    });
   }
   memoryCache = parsed;
   return memoryCache;

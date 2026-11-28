@@ -49,6 +49,11 @@ export function CheckinClient({
   const [result, setResult] = useState<CheckinResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [checkins, setCheckins] = useState<TodayCheckinRow[]>(initialCheckins);
+  const [quickWeight, setQuickWeight] = useState("");
+  const [quickHeight, setQuickHeight] = useState("170");
+  const [quickNotes, setQuickNotes] = useState("");
+  const [quickMetricMsg, setQuickMetricMsg] = useState<string | null>(null);
+  const [quickMetricSaving, setQuickMetricSaving] = useState(false);
   const [isScanAnimating, setIsScanAnimating] = useState(false);
   const [showGymQr, setShowGymQr] = useState(true);
   const scanRef = useRef<HTMLInputElement>(null);
@@ -85,6 +90,9 @@ export function CheckinClient({
       return;
     }
     setResult(data);
+    setQuickWeight("");
+    setQuickNotes("");
+    setQuickMetricMsg(null);
     if (data.allowed && data.checkin) {
       setIsScanAnimating(true);
       setTimeout(() => setIsScanAnimating(false), 1200);
@@ -476,6 +484,94 @@ export function CheckinClient({
                 >
                   Perpanjang Sekarang
                 </Link>
+              )}
+
+              {result.allowed && (
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!quickWeight) return;
+                    setQuickMetricSaving(true);
+                    setQuickMetricMsg(null);
+                    try {
+                      const res = await fetch("/api/body-metrics", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          member_id: result.member.id,
+                          weight_kg: Number(quickWeight),
+                          height_cm: Number(quickHeight) || 170,
+                          notes: quickNotes.trim() || null,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        setQuickMetricMsg(data.error || "Gagal menyimpan BB");
+                        return;
+                      }
+                      const bmi =
+                        data.metric?.height_cm > 0
+                          ? (
+                              data.metric.weight_kg /
+                              (data.metric.height_cm / 100) ** 2
+                            ).toFixed(1)
+                          : "-";
+                      setQuickMetricMsg(
+                        `${data.updated ? "Diperbarui" : "Tersimpan"}: BB ${data.metric.weight_kg} kg · TB ${data.metric.height_cm} cm (BMI ${bmi})`
+                      );
+                    } finally {
+                      setQuickMetricSaving(false);
+                    }
+                  }}
+                  className="mt-4 rounded-xl border border-slate-200/80 bg-white/90 p-3 text-slate-900"
+                >
+                  <p className="text-xs font-bold text-slate-800">
+                    Input Cepat BB &amp; Tinggi Member
+                  </p>
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="1"
+                      max="500"
+                      required
+                      placeholder="BB (kg)"
+                      value={quickWeight}
+                      onChange={(e) => setQuickWeight(e.target.value)}
+                      className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs"
+                    />
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="50"
+                      max="300"
+                      required
+                      placeholder="TB (cm)"
+                      value={quickHeight}
+                      onChange={(e) => setQuickHeight(e.target.value)}
+                      className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs"
+                    />
+                    <button
+                      type="submit"
+                      disabled={quickMetricSaving}
+                      className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-60"
+                    >
+                      {quickMetricSaving ? "..." : "Simpan BB"}
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Catatan (opsional)..."
+                    value={quickNotes}
+                    onChange={(e) => setQuickNotes(e.target.value)}
+                    className="mt-2 w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs"
+                  />
+                  {quickMetricMsg && (
+                    <p className="mt-2 text-xs font-semibold text-emerald-700">
+                      {quickMetricMsg}
+                    </p>
+                  )}
+                </form>
               )}
             </div>
           )}

@@ -23,6 +23,7 @@ import {
   QrCode,
   Receipt,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   ShoppingCart,
   Tag,
@@ -150,14 +151,23 @@ export function AppShell({
       ?.id ?? null;
   const [openGroup, setOpenGroup] = useState<string | null>(initialOpenGroup);
 
+  const isOwnerOrSuper = staff.role === "owner" || staff.role === "superadmin";
+
   const visibleGroups = NAV_GROUPS.filter(
-    (g) => !g.ownerOnly || staff.role === "owner"
+    (g) => !g.ownerOnly || isOwnerOrSuper
   )
     .map((g) => ({
       ...g,
-      items: g.items.filter((i) => !i.ownerOnly || staff.role === "owner"),
+      items: g.items.filter((i) => !i.ownerOnly || isOwnerOrSuper),
     }))
     .filter((g) => g.items.length > 0);
+
+  const primaryItems: NavItem[] =
+    staff.role === "superadmin"
+      ? [{ href: "/superadmin", label: "Panel Superadmin", icon: ShieldCheck }, ...PRIMARY_NAV]
+      : isOwnerOrSuper
+      ? PRIMARY_NAV
+      : CASHIER_NAV;
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -193,7 +203,12 @@ export function AppShell({
         <div className="min-w-0">
           <p className="truncate text-sm font-bold text-slate-900">{settings.name}</p>
           <p className="text-xs text-slate-500">
-            {staff.role === "owner" ? "Owner" : "Kasir"} · {staff.name.split(" ")[0]}
+            {staff.role === "superadmin"
+              ? "Superadmin"
+              : staff.role === "owner"
+              ? "Owner"
+              : "Kasir"}{" "}
+            · {staff.name.split(" ")[0]}
           </p>
         </div>
       </div>
@@ -201,10 +216,10 @@ export function AppShell({
       <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
         <div>
           <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            {staff.role === "owner" ? "Menu Utama" : "Operasional Kasir"}
+            {isOwnerOrSuper ? "Menu Utama" : "Operasional Kasir"}
           </p>
           <div className="space-y-1">
-            {(staff.role === "owner" ? PRIMARY_NAV : CASHIER_NAV).map((item) => {
+            {primaryItems.map((item) => {
               const Icon = item.icon;
               const active = isRouteActive(item.href);
               return (

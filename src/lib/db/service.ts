@@ -268,8 +268,11 @@ export function getMemberById(id: string): MemberWithStatus | null {
 }
 
 export function getMemberByCodeOrPhone(query: string): MemberWithStatus | null {
-  const q = query.trim().toLowerCase();
-  if (!q) return null;
+  const raw = query.trim();
+  if (!raw) return null;
+  const q = raw.toLowerCase();
+  const portalMatch = raw.match(/\/m\/([^/?#]+)/i);
+  const tokenFromUrl = portalMatch ? portalMatch[1].toLowerCase() : null;
   const shorthandCode = /^\d{1,5}$/.test(q)
     ? `gym-${q.padStart(5, "0")}`
     : null;
@@ -277,7 +280,9 @@ export function getMemberByCodeOrPhone(query: string): MemberWithStatus | null {
     (m) =>
       m.member_code.toLowerCase() === q ||
       (shorthandCode !== null && m.member_code.toLowerCase() === shorthandCode) ||
-      m.phone.toLowerCase() === q
+      m.phone.toLowerCase() === q ||
+      m.portal_token.toLowerCase() === q ||
+      (tokenFromUrl !== null && m.portal_token.toLowerCase() === tokenFromUrl)
   );
   return member ? enrichMemberWithStatus(member) : null;
 }

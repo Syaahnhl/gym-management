@@ -26,7 +26,7 @@ export default function LoginPage() {
         setError(data.error || "Login gagal");
         return;
       }
-      router.push("/dashboard");
+      router.push(data.user?.role === "superadmin" ? "/superadmin" : "/dashboard");
       router.refresh();
     } catch {
       setError("Terjadi kesalahan jaringan.");

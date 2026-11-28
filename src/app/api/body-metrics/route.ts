@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentStaff } from "@/lib/auth/session";
 import { readLocalDb, writeLocalDb } from "@/lib/db/local-store";
+import { getJakartaTodayStr } from "@/lib/domain/membership";
 
 export async function GET(req: Request) {
   const staff = await getCurrentStaff();
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
 
   if (!authorized && body.portal_token && body.member_id) {
     const memberMatch = db.members.find(
-      (m) => m.id === body.member_id && m.portal_token === body.portal_token,
+      (m) => m.id === body.member_id && m.portal_token === body.portal_token
     );
     authorized = Boolean(memberMatch);
   }
@@ -43,25 +44,73 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!body.member_id || !body.weight_kg || !body.height_cm) {
+  if (!body.member_id) {
+    return NextResponse.json({ error: "Member wajib diisi" }, { status: 400 });
+  }
+
+  const memberExists = db.members.some((m) => m.id === body.member_id);
+  if (!memberExists) {
     return NextResponse.json(
-      { error: "Member, berat & tinggi wajib diisi" },
-      { status: 400 },
+      { error: "Member tidak ditemukan" },
+      { status: 404 }
     );
+  }
+
+  const weightKg = Number(body.weight_kg);
+  const heightCm = Number(body.height_cm);
+  if (!Number.isFinite(weightKg) || weightKg <= 0 || weightKg > 500) {
+    return NextResponse.json(
+      { error: "Berat badan (kg) harus berupa angka yang valid (1–500 kg)" },
+      { status: 400 }
+    );
+  }
+  if (!Number.isFinite(heightCm) || heightCm <= 0 || heightCm > 300) {
+    return NextResponse.json(
+      { error: "Tinggi badan (cm) harus berupa angka yang valid (1–300 cm)" },
+      { status: 400 }
+    );
+  }
+
+  const parseOpt = (v: number | null | undefined) => {
+    if (v === null || v === undefined || v === ("" as unknown as number)) {
+      return null;
+    }
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  };
+
+  const todayWib = getJakartaTodayStr();
+  const existingIdx = db.body_metrics.findIndex(
+    (m) => m.member_id === body.member_id && m.recorded_at === todayWib
+  );
+
+  if (existingIdx >= 0) {
+    const updatedMetric = {
+      ...db.body_metrics[existingIdx],
+      weight_kg: weightKg,
+      height_cm: heightCm,
+      body_fat_percent: parseOpt(body.body_fat_percent),
+      muscle_mass_kg: parseOpt(body.muscle_mass_kg),
+      waist_cm: parseOpt(body.waist_cm),
+      notes: body.notes?.trim() || null,
+    };
+    db.body_metrics[existingIdx] = updatedMetric;
+    writeLocalDb(db);
+    return NextResponse.json({ metric: updatedMetric, updated: true });
   }
 
   const metric = {
     id: `bm-${Date.now()}`,
     member_id: body.member_id,
-    recorded_at: new Date().toISOString().slice(0, 10),
-    weight_kg: Number(body.weight_kg),
-    height_cm: Number(body.height_cm),
-    body_fat_percent: body.body_fat_percent ? Number(body.body_fat_percent) : null,
-    muscle_mass_kg: body.muscle_mass_kg ? Number(body.muscle_mass_kg) : null,
-    waist_cm: body.waist_cm ? Number(body.waist_cm) : null,
-    notes: body.notes || null,
+    recorded_at: todayWib,
+    weight_kg: weightKg,
+    height_cm: heightCm,
+    body_fat_percent: parseOpt(body.body_fat_percent),
+    muscle_mass_kg: parseOpt(body.muscle_mass_kg),
+    waist_cm: parseOpt(body.waist_cm),
+    notes: body.notes?.trim() || null,
   };
   db.body_metrics.unshift(metric);
   writeLocalDb(db);
-  return NextResponse.json({ metric });
+  return NextResponse.json({ metric, updated: false }, { status: 201 });
 }
