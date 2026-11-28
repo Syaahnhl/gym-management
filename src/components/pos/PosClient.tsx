@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { Banknote, Calculator, Landmark, Minus, Plus, QrCode, ShoppingCart, Trash2 } from "lucide-react";
 import type { Package, PaymentMethod, Product, StaffRole } from "@/types/database";
 import { formatRupiah } from "@/lib/domain/format";
 
@@ -40,8 +40,54 @@ export function PosClient({
   const [discountReason, setDiscountReason] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [cashReceived, setCashReceived] = useState(0);
+  const [showCalc, setShowCalc] = useState(false);
+  const [calcExpr, setCalcExpr] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const DENOMINATIONS = [
+    { label: "100k", value: 100000 },
+    { label: "50k", value: 50000 },
+    { label: "20k", value: 20000 },
+    { label: "10k", value: 10000 },
+    { label: "5k", value: 5000 },
+    { label: "2k", value: 2000 },
+    { label: "1k", value: 1000 },
+    { label: "500", value: 500 },
+  ];
+
+  function evalCalcExpression(expr: string): number | null {
+    const cleaned = expr.replace(/[^0-9+\-*]/g, "");
+    if (!cleaned) return null;
+    try {
+      const tokens = cleaned.match(/\d+|[+\-*]/g);
+      if (!tokens || tokens.length === 0) return null;
+      // Evaluate * first, then + and -
+      const stack: (number | string)[] = [];
+      let i = 0;
+      while (i < tokens.length) {
+        if (tokens[i] === "*" && stack.length > 0 && i + 1 < tokens.length) {
+          const prev = Number(stack.pop());
+          const next = Number(tokens[i + 1]);
+          stack.push(prev * next);
+          i += 2;
+        } else {
+          stack.push(tokens[i]);
+          i += 1;
+        }
+      }
+      let result = Number(stack[0]) || 0;
+      for (let j = 1; j < stack.length; j += 2) {
+        const op = stack[j];
+        const val = Number(stack[j + 1]) || 0;
+        if (op === "+") result += val;
+        else if (op === "-") result -= val;
+      }
+      return Math.max(0, Math.round(result));
+    } catch {
+      return null;
+    }
+  }
 
   function addToCart(product: Product) {
     if (product.stock <= 0) {
@@ -92,6 +138,10 @@ export function PosClient({
   async function handleCheckout(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (paymentMethod === "cash" && cashReceived < total) {
+      setError(`Uang tunai diterima masih kurang ${formatRupiah(total - cashReceived)}.`);
+      return;
+    }
     setLoading(true);
     try {
       let targetMemberId = memberId || null;
@@ -509,37 +559,18 @@ export function PosClient({
                 )}
               </div>
             )}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-xs font-medium text-slate-600">
-                  Diskon (Rp){" "}
-                  {staffRole === "cashier" && `(maks ${formatRupiah(maxCashierDiscount)})`}
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  value={discount}
-                  onChange={(e) => setDiscount(Number(e.target.value))}
-                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600">
-                  Metode Bayar
-                </label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) =>
-                    setPaymentMethod(e.target.value as PaymentMethod)
-                  }
-                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-                >
-                  <option value="cash">Tunai</option>
-                  <option value="qris">QRIS</option>
-                  <option value="transfer">Transfer</option>
-                  <option value="card">Kartu (EDC)</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600">
+                Diskon (Rp){" "}
+                {staffRole === "cashier" && `(maks ${formatRupiah(maxCashierDiscount)})`}
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={discount}
+                onChange={(e) => setDiscount(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              />
             </div>
             {discount > 0 && (
               <input
@@ -550,19 +581,174 @@ export function PosClient({
                 className="w-full rounded-lg border px-3 py-2 text-sm"
               />
             )}
-            {paymentMethod === "cash" && (
-              <div>
-                <label className="block text-xs font-medium text-slate-600">
-                  Uang Diterima (Rp)
-                </label>
+
+            {/* 3 Mode Pembayaran */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-slate-600">
+                Metode Pembayaran
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: "cash" as PaymentMethod, label: "Tunai", icon: Banknote },
+                  { id: "qris" as PaymentMethod, label: "QRIS", icon: QrCode },
+                  { id: "transfer" as PaymentMethod, label: "Transfer", icon: Landmark },
+                ].map((m) => {
+                  const Icon = m.icon;
+                  const active = paymentMethod === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id)}
+                      className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition ${
+                        active
+                          ? "border-emerald-600 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {paymentMethod === "cash" ? (
+              <div className="space-y-2.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-slate-700">
+                    Uang Diterima (Tunai)
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCashReceived(total)}
+                      className="rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700 hover:bg-emerald-200"
+                    >
+                      Uang Pas
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCashReceived(0)}
+                      className="rounded-md bg-slate-200 px-2 py-0.5 text-[11px] font-bold text-slate-700 hover:bg-slate-300"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowCalc((v) => !v)}
+                      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-bold ${
+                        showCalc
+                          ? "bg-blue-600 text-white"
+                          : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      }`}
+                    >
+                      <Calculator className="h-3 w-3" />
+                      Kalkulator
+                    </button>
+                  </div>
+                </div>
+
                 <input
                   type="number"
-                  min={total}
+                  min={0}
                   required
-                  value={cashReceived}
-                  onChange={(e) => setCashReceived(Number(e.target.value))}
-                  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+                  value={cashReceived || ""}
+                  placeholder="Ketik nominal uang diterima..."
+                  onChange={(e) => setCashReceived(Math.max(0, Number(e.target.value)))}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-900 focus:border-emerald-600 focus:outline-none"
                 />
+
+                {/* Pecahan Uang */}
+                <div>
+                  <p className="mb-1 text-[11px] font-medium text-slate-500">
+                    Tambah Pecahan Uang:
+                  </p>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {DENOMINATIONS.map((d) => (
+                      <button
+                        key={d.value}
+                        type="button"
+                        onClick={() => setCashReceived((prev) => prev + d.value)}
+                        className="rounded-lg border border-slate-200 bg-white py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-700 active:scale-95"
+                      >
+                        +{d.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Kalkulator Mini */}
+                {showCalc && (
+                  <div className="rounded-xl border border-blue-200 bg-white p-2.5 space-y-2">
+                    <div className="flex items-center justify-between rounded-lg bg-slate-900 px-3 py-2 text-right font-mono text-sm text-white">
+                      <span className="text-[11px] text-slate-400">CALC</span>
+                      <span className="truncate font-bold">{calcExpr || "0"}</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {["7", "8", "9", "+", "4", "5", "6", "-", "1", "2", "3", "*", "C", "0", "000", "⌫"].map(
+                        (btn) => (
+                          <button
+                            key={btn}
+                            type="button"
+                            onClick={() => {
+                              if (btn === "C") setCalcExpr("");
+                              else if (btn === "⌫") setCalcExpr((p) => p.slice(0, -1));
+                              else setCalcExpr((p) => p + btn);
+                            }}
+                            className={`rounded-lg py-1.5 text-xs font-bold transition ${
+                              ["+", "-", "*"].includes(btn)
+                                ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                : btn === "C"
+                                ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
+                                : "bg-slate-100 text-slate-800 hover:bg-slate-200"
+                            }`}
+                          >
+                            {btn}
+                          </button>
+                        )
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const res = evalCalcExpression(calcExpr);
+                        if (res !== null) {
+                          setCashReceived(res);
+                          setCalcExpr(String(res));
+                        }
+                      }}
+                      className="w-full rounded-lg bg-blue-600 py-1.5 text-xs font-bold text-white hover:bg-blue-700"
+                    >
+                      = Hitung &amp; Pakai ke Uang Diterima
+                    </button>
+                  </div>
+                )}
+
+                {/* Kembalian / Kurang */}
+                {total > 0 && (
+                  <div
+                    className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-bold ${
+                      cashReceived >= total
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    <span>{cashReceived >= total ? "Kembalian" : "Kurang Bayar"}</span>
+                    <span>
+                      {cashReceived >= total
+                        ? formatRupiah(cashReceived - total)
+                        : formatRupiah(total - cashReceived)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 text-xs text-blue-800">
+                {paymentMethod === "qris"
+                  ? "Mode QRIS: Pastikan pelanggan sudah scan QRIS dan pembayaran terkonfirmasi berhasil."
+                  : "Mode Transfer: Pastikan bukti transfer bank sudah dicek dan nominal sesuai total bayar."}
               </div>
             )}
           </div>
